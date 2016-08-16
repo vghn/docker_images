@@ -22,7 +22,7 @@ class API < Sinatra::Base
     payload = JSON.parse(params[:payload])
     build   = payload['number']
     branch  = payload['branch']
-    repo    = payload['repo']['name']
+    repo    = payload['repository']['name']
 
     verify_travis_request
     async_deploy
