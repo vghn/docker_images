@@ -1,4 +1,4 @@
--e ## Version 0.0.1 / 2016-08-17
+## Version 0.0.1 / 2016-08-17
   * Initial commit ([Vlad - ce04051](https://github.com/vghn/puppet-docker.git/commit/ce04051c35297d77e85cf34e47f4e60209619b59))
   * Update .gitignore ([Vlad - 3ca302c](https://github.com/vghn/puppet-docker.git/commit/3ca302c7f95a685e4df9fd5e734b28225c62369a))
   * Update license ([Vlad - 484cc92](https://github.com/vghn/puppet-docker.git/commit/484cc92a6228aebff7f079721ad486c27a4bcf62))
