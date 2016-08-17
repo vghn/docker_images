@@ -8,6 +8,10 @@ def git_commit
   `git rev-parse --short HEAD`.strip
 end
 
+def git_branch
+  `git symbolic-ref --short HEAD`.strip
+end
+
 def git_url
   `git config --get remote.origin.url`.strip
 end

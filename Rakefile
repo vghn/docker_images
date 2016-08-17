@@ -79,8 +79,13 @@ IMAGES.each do |image|
       info "Tagging #{docker_image}:#{version}"
       sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:#{version}"
 
-      info "Tagging #{docker_image}:latest"
-      sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:latest"
+      if git_branch == 'master'
+        info "Tagging #{docker_image}:latest"
+        sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:latest"
+      else
+        info "Tagging #{docker_image}:#{git_branch}"
+        sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:#{git_branch}"
+      end
     end
 
     desc 'Publish docker image'
