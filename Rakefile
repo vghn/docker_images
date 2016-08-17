@@ -9,6 +9,7 @@ Dir['tasks/**/*.rake'].each { |task| load task }
 REPOSITORY   = ENV['DOCKER_REPOSITORY']   || 'vladgh'
 IMAGE_PREFIX = ENV['DOCKER_IMAGE_PREFIX'] || 'vpm'
 NO_CACHE     = ENV['DOCKER_NO_CACHE']     || false
+RELEASE_TYPE = ENV['RELEASE_TYPE']        || 'patch'
 BUILD_DATE   = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 IMAGES = Dir.glob('*').select do |dir|
@@ -127,3 +128,15 @@ task test: [
   :lint,
   :spec
 ]
+
+# Requires the VGS library (https://github.com/vghn/vgs)
+desc 'Release'
+task :release do
+  sh <<-EOS
+    . /opt/vgs/load 2>/dev/null || . ~/vgs/load 2>/dev/null || true
+    vgs_release \
+      --sign \
+      --type #{RELEASE_TYPE} \
+      --github-url '#{git_url}'
+  EOS
+end
