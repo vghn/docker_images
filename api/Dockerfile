@@ -28,8 +28,8 @@ COPY app /app
 COPY r10k.yaml /etc/puppetlabs/r10k/r10k.yaml
 
 # Configure entrypoint
-COPY run.sh /
-ENTRYPOINT ["/run.sh"]
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Health
 HEALTHCHECK --interval=30s --timeout=30s --retries=10 CMD \
