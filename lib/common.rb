@@ -9,7 +9,9 @@ def git_commit
 end
 
 def git_branch
-  `git symbolic-ref --short HEAD`.strip
+  return ENV['GIT_BRANCH'] if ENV['GIT_BRANCH']
+  return ENV["TRAVIS_BRANCH"] if ENV["TRAVIS_BRANCH"]
+  `git symbolic-ref HEAD --short 2>/dev/null`.strip
 end
 
 def git_url
