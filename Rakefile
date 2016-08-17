@@ -93,8 +93,18 @@ IMAGES.each do |image|
     task push: :docker do
       info "Pushing #{docker_image}:#{docker_tag} to Docker Hub"
       sh "docker push '#{docker_image}:#{docker_tag}'"
-      info "Pushing #{docker_image}:latest to Docker Hub"
-      sh "docker push '#{docker_image}:latest'"
+
+      info "Pushing #{docker_image}:#{version} to Docker Hub"
+      sh "docker push '#{docker_image}:#{version}'"
+
+      case git_branch
+      when master
+        info "Pushing #{docker_image}:latest to Docker Hub"
+        sh "docker push '#{docker_image}:latest'"
+      else
+        info "Pushing #{docker_image}:#{git_branch} to Docker Hub"
+        sh "docker push '#{docker_image}:#{git_branch}'"
+      end
     end
   end
 end
