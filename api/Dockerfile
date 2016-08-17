@@ -11,7 +11,7 @@ WORKDIR /app
 # Install gems
 COPY app/Gemfile /app/Gemfile
 RUN apk --no-cache add --virtual build-dependencies ruby-dev build-base && \
-    bundle install && \
+    bundle install --without development && \
     apk del build-dependencies
 
 # Environment

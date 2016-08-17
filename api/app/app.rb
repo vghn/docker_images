@@ -3,6 +3,9 @@ require 'rack/ssl'
 require 'sinatra'
 require 'sinatra/base'
 
+# Load helper methods
+Dir.glob('./helpers/*.rb').each { |file| require file }
+
 # Sinatra Application Class
 class API < Sinatra::Base
   use Rack::SSL
@@ -11,8 +14,10 @@ class API < Sinatra::Base
   end
 
   # Intitial deployment
-  log.info 'Initial deployment'
-  deploy
+  unless ENV['RACK_ENV'] == 'test'
+    log.info 'Initial deployment'
+    deploy
+  end
 
   get '/' do
     'Nothing here! Yet!'
@@ -34,7 +39,7 @@ class API < Sinatra::Base
   post '/github' do
     request.body.rewind
     payload_body = request.body.read
-    verify_signature(payload_body)
+    verify_github_signature(payload_body)
 
     payload = JSON.parse(params[:payload])
     async_deploy

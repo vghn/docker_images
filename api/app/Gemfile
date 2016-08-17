@@ -5,3 +5,12 @@ gem 'puma', require: false
 gem 'r10k', require: false
 gem 'sinatra', require: false
 gem 'rack-ssl', require: false
+
+group :development do
+  gem 'rack-test', require: false
+  gem 'rake', require: false
+  gem 'rspec', require: false
+  gem 'rubocop', require: false
+  gem 'travis', require: false
+  gem 'travis-lint', require: false
+end

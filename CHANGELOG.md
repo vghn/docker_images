@@ -1,3 +1,7 @@
+## Version 0.0.3 / 2016-08-17
+  * Fix TravisCI badge ([Vlad - 26e717c](https://github.com/vghn/puppet-docker.git/commit/26e717c0ef158fa25af41ce9695798d06fdd2b7e))
+  * Add testing for the API app ([Vlad - 1adfcea](https://github.com/vghn/puppet-docker.git/commit/1adfceadb7a1ffea1e8b03da1fb27ba5b0d806f6))
+
 ## Version 0.0.2 / 2016-08-17
   * Fix release command ([Vlad - 8197480](https://github.com/vghn/puppet-docker.git/commit/819748065208cc0362d2c7c8126624551d5b5083))
 
