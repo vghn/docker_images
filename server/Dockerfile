@@ -28,7 +28,7 @@ RUN gem install aws-sdk --no-ri --no-rdoc
 EXPOSE 8140
 
 # Copy config files
-COPY logback.xml request-logging.xml /etc/puppetlabs/puppetserver/# Environment
+COPY logback.xml request-logging.xml /etc/puppetlabs/puppetserver/
 COPY hiera.yaml /etc/puppetlabs/puppet/hiera.yaml
 COPY csr-sign /usr/local/bin/
 
