@@ -79,7 +79,8 @@ IMAGES.each do |image|
       info "Tagging #{docker_image}:#{version}"
       sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:#{version}"
 
-      if git_branch == 'master'
+      case git_branch
+      when master
         info "Tagging #{docker_image}:latest"
         sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:latest"
       else
