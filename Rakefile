@@ -80,7 +80,7 @@ IMAGES.each do |image|
       sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:#{version}"
 
       case git_branch
-      when master
+      when 'master'
         info "Tagging #{docker_image}:latest"
         sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:latest"
       else
@@ -98,7 +98,7 @@ IMAGES.each do |image|
       sh "docker push '#{docker_image}:#{version}'"
 
       case git_branch
-      when master
+      when 'master'
         info "Pushing #{docker_image}:latest to Docker Hub"
         sh "docker push '#{docker_image}:latest'"
       else
