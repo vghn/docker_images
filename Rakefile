@@ -133,10 +133,9 @@ task test: [
 desc 'Release'
 task :release do
   sh <<-EOS
-    . /opt/vgs/load 2>/dev/null || . ~/vgs/load 2>/dev/null || true
-    vgs_release \
-      --sign \
-      --type #{RELEASE_TYPE} \
-      --github-url '#{git_url}'
+  bash -euo pipefail -c '\
+    { . /opt/vgs/load 2>/dev/null || . ~/vgs/load 2>/dev/null || true ;} && \
+    vgs_release --sign --type #{RELEASE_TYPE} --github-url #{git_url} \
+  '
   EOS
 end
