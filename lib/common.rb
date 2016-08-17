@@ -4,12 +4,12 @@ def version
   File.read('VERSION').strip
 end
 
-def current_git_sha
-  `git rev-parse HEAD`.strip
+def git_commit
+  `git rev-parse --short HEAD`.strip
 end
 
-def previous_git_sha
-  `git rev-parse HEAD~1`.strip
+def git_url
+  `git config --get remote.origin.url`.strip
 end
 
 def info(message)

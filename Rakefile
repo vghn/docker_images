@@ -9,6 +9,7 @@ Dir['tasks/**/*.rake'].each { |task| load task }
 REPOSITORY   = ENV['DOCKER_REPOSITORY'] || 'vladgh'
 IMAGE_PREFIX = ENV['IMAGE_PREFIX']      || 'vpm'
 NO_CACHE     = ENV['DOCKER_NO_CACHE']   || false
+BUILD_DATE   = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 IMAGES = Dir.glob('*').select do |dir|
   File.directory?(dir) && File.exist?("#{dir}/Dockerfile")
@@ -44,48 +45,52 @@ task gc: :docker do
 end
 
 IMAGES.each do |image|
-  name = File.basename(image)
-  path = "#{REPOSITORY}/#{IMAGE_PREFIX}-#{name}"
+  docker_dir   = File.basename(image)
+  docker_image = "#{REPOSITORY}/#{IMAGE_PREFIX}-#{docker_dir}"
+  docker_tag   = "#{version}-#{git_commit}"
 
-  namespace name.to_sym do |_args|
+  namespace docker_dir.to_sym do |_args|
     RSpec::Core::RakeTask.new(spec: [:docker]) do |t|
-      t.pattern = "#{image}/spec/*_spec.rb"
+      t.pattern = "#{docker_dir}/spec/*_spec.rb"
     end
 
     desc 'Run Hadolint against the Dockerfile'
     task lint: :docker do
-      info "Running Hadolint to check the style of #{image}/Dockerfile"
-      sh "docker run --rm -i lukasmartinelli/hadolint < #{image}/Dockerfile"
+      info "Running Hadolint to check the style of #{docker_dir}/Dockerfile"
+      sh "docker run --rm -i lukasmartinelli/hadolint < #{docker_dir}/Dockerfile"
     end
 
     desc 'Build docker image'
     task build: :docker do
-      info "Building #{path}:latest"
-      cmd = "cd #{image} && docker build -t #{path}:latest"
-      info "Ignoring layer cache for #{path}" if NO_CACHE
-      cmd += ' --no-cache' if NO_CACHE
-      sh "#{cmd} ."
-      if version
-        info "Building #{path}:#{version}"
-        sh "cd #{image} && docker build -t #{path}:#{version} ."
+      cmd =  "cd #{docker_dir} && docker build"
+      cmd += " --build-arg VERSION=#{docker_tag}"
+      cmd += " --build-arg VCS_URL=#{git_url}"
+      cmd += " --build-arg VCS_REF=#{git_commit}"
+      cmd += " --build-arg BUILD_DATE=#{BUILD_DATE}"
+
+      if NO_CACHE
+        info "Ignoring layer cache for #{docker_image}"
+        cmd += ' --no-cache'
       end
+
+      info "Building #{docker_image}:#{docker_tag}"
+      sh "#{cmd} -t #{docker_image}:#{docker_tag} ."
+
+      info "Tagging #{docker_image}:latest"
+      sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:latest"
     end
 
     desc 'Publish docker image'
-    task publish: :docker do
-      if version
-        info "Pushing #{path}:#{version} to Docker Hub"
-        sh "docker push '#{path}:#{version}'"
-      else
-        warn "No version specified in Dockerfile for #{path}"
-      end
-      info "Pushing #{path}:latest to Docker Hub"
-      sh "docker push '#{path}:latest'"
+    task push: :docker do
+      info "Pushing #{docker_image}:#{docker_tag} to Docker Hub"
+      sh "docker push '#{docker_image}:#{docker_tag}'"
+      info "Pushing #{docker_image}:latest to Docker Hub"
+      sh "docker push '#{docker_image}:latest'"
     end
   end
 end
 
-[:lint, :build, :publish].each do |task_name|
+[:lint, :build, :push].each do |task_name|
   desc "Run #{task_name} for all images in repository in parallel"
   multitask task_name => IMAGES
     .collect { |image| "#{File.basename(image)}:#{task_name}" }
