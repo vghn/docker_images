@@ -76,6 +76,9 @@ IMAGES.each do |image|
       info "Building #{docker_image}:#{docker_tag}"
       sh "#{cmd} -t #{docker_image}:#{docker_tag} ."
 
+      info "Tagging #{docker_image}:#{version}"
+      sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:#{version}"
+
       info "Tagging #{docker_image}:latest"
       sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:latest"
     end
