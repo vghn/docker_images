@@ -8,9 +8,13 @@ branches:
   except:
     - /^v\d/
 env:
-  - IMAGE=api
-  - IMAGE=server
-  - IMAGE=sync
+  global:
+    - DOCKER_REPOSITORY=vladgh
+    - DOCKER_IMAGE_PREFIX=vpm
+  matrix:
+    - IMAGE=api
+    - IMAGE=server
+    - IMAGE=sync
 before_install:
   - sudo apt-get -qy update
   - sudo apt-get -qy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install docker-engine

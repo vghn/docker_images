@@ -6,9 +6,9 @@ $LOAD_PATH << File.join(File.dirname(__FILE__), 'tasks')
 Dir['tasks/**/*.rake'].each { |task| load task }
 
 # VARs
-REPOSITORY   = ENV['DOCKER_REPOSITORY'] || 'vladgh'
-IMAGE_PREFIX = ENV['IMAGE_PREFIX']      || 'vpm'
-NO_CACHE     = ENV['DOCKER_NO_CACHE']   || false
+REPOSITORY   = ENV['DOCKER_REPOSITORY']   || 'vladgh'
+IMAGE_PREFIX = ENV['DOCKER_IMAGE_PREFIX'] || 'vpm'
+NO_CACHE     = ENV['DOCKER_NO_CACHE']     || false
 BUILD_DATE   = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 IMAGES = Dir.glob('*').select do |dir|
