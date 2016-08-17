@@ -1,3 +1,6 @@
+## Version 0.0.2 / 2016-08-17
+  * Fix release command ([Vlad - 8197480](https://github.com/vghn/puppet-docker.git/commit/819748065208cc0362d2c7c8126624551d5b5083))
+
 ## Version 0.0.1 / 2016-08-17
   * Initial commit ([Vlad - ce04051](https://github.com/vghn/puppet-docker.git/commit/ce04051c35297d77e85cf34e47f4e60209619b59))
   * Update .gitignore ([Vlad - 3ca302c](https://github.com/vghn/puppet-docker.git/commit/3ca302c7f95a685e4df9fd5e734b28225c62369a))
@@ -19,5 +22,3 @@
   * Push all images to Docker Hub ([Vlad - 9eea488](https://github.com/vghn/puppet-docker.git/commit/9eea488fa5988beda192ad3a210004f27a09e9f1))
   * Fix typo ([Vlad - adc3af9](https://github.com/vghn/puppet-docker.git/commit/adc3af9b553468deac638342e92a681bd4abcba4))
   * Add release task ([Vlad - 2252022](https://github.com/vghn/puppet-docker.git/commit/22520225496dcd8ab178dea4a47b5d088450f295))
-
-
