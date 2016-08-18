@@ -25,7 +25,7 @@ script:
 before_deploy:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
   - eval "$(ssh-agent -s)"
-  - echo "$DEPLOY_RSA" | base64 --decode --ignore-garbage ~/.ssh/deploy_rsa
+  - echo "$DEPLOY_RSA" | base64 --decode --ignore-garbage > ~/.ssh/deploy_rsa
   - chmod 600 ~/.ssh/deploy_rsa
   - ssh-add ~/.ssh/deploy_rsa
   - ssh-keyscan -H puppet.ghn.me >> ~/.ssh/known_hosts
