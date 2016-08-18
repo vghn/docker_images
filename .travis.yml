@@ -24,11 +24,12 @@ script:
   - bundle exec rake ${IMAGE}:spec
 before_deploy:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+  - base64 --help; base64 --version
   - echo "$DEPLOY_RSA" | base64 --decode --ignore-garbage > ~/.ssh/deploy_rsa
-    chmod 600 ~/.ssh/deploy_rsa
-    eval "$(ssh-agent -s)"
-    ssh-add ~/.ssh/deploy_rsa
-    ssh-keyscan -H puppet.ghn.me >> ~/.ssh/known_hosts
+  - chmod 600 ~/.ssh/deploy_rsa
+  - eval "$(ssh-agent -s)"
+  - ssh-add ~/.ssh/deploy_rsa
+  - ssh-keyscan -H puppet.ghn.me >> ~/.ssh/known_hosts
 deploy:
   provider: script
   script: bundle exec rake ${IMAGE}:push && ssh ubuntu@puppet.ghn.me "cd /opt/vpm && docker-compose pull ${IMAGE} && docker-compose up -d ${IMAGE}"
