@@ -22,10 +22,18 @@ install: bundle install --path vendor/bundle
 script:
   - bundle exec rake ${IMAGE}:build
   - bundle exec rake ${IMAGE}:spec
-before_deploy: docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+before_deploy:
+  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+  - eval "$(ssh-agent -s)"
+  - echo "$DEPLOY_RSA" | base64 --decode --ignore-garbage ~/.ssh/deploy_rsa
+  - chmod 600 ~/.ssh/deploy_rsa
+  - ssh-add ~/.ssh/deploy_rsa
+  - ssh-keyscan -H puppet.ghn.me >> ~/.ssh/known_hosts
 deploy:
   provider: script
-  script: bundle exec rake ${IMAGE}:push
+  script:
+    - bundle exec rake ${IMAGE}:push
+    - ssh ubuntu@puppet.ghn.me "cd /opt/vpm && docker-compose pull ${IMAGE} && docker-compose up -d ${IMAGE}"
   skip_cleanup: true
   on:
     all_branches: true
