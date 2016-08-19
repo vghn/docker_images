@@ -1,3 +1,11 @@
+## Version 0.0.4 / 2016-08-19
+  * Add notifications webhook ([Vlad - 8cfcbf6](https://github.com/vghn/puppet-docker.git/commit/8cfcbf617af2363424c2a1af9599ade9376ca18d))
+  * Deploy the freshly built image via SSH ([Vlad - 8cf8d18](https://github.com/vghn/puppet-docker.git/commit/8cf8d18a8daf0c1d12eff56ba7ea93fd04504674))
+  * Fix key decoding ([Vlad - 03714d0](https://github.com/vghn/puppet-docker.git/commit/03714d09ed078e804417ba62d8ded35163767df2))
+  * Fix deployment ([Vlad - d3bf9f2](https://github.com/vghn/puppet-docker.git/commit/d3bf9f2e74e104abbc36e2f42956e2e4d39b36e8))
+  * Debug deployment ([Vlad - 8cc55c5](https://github.com/vghn/puppet-docker.git/commit/8cc55c56b46b48b5c18bdc661cc810996a5e3023))
+  * Improve deployment ([Vlad - f018558](https://github.com/vghn/puppet-docker.git/commit/f018558bde88b2c57e6a3eb6d93dd3de3d121669))
+
 ## Version 0.0.3 / 2016-08-17
   * Fix TravisCI badge ([Vlad - 26e717c](https://github.com/vghn/puppet-docker.git/commit/26e717c0ef158fa25af41ce9695798d06fdd2b7e))
   * Add testing for the API app ([Vlad - 1adfcea](https://github.com/vghn/puppet-docker.git/commit/1adfceadb7a1ffea1e8b03da1fb27ba5b0d806f6))
