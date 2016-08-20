@@ -102,23 +102,21 @@ IMAGES.each do |image|
       end
     end
 
-    if ! ENV['TRAVIS_PULL_REQUEST']
-      desc 'Publish docker image'
-      task push: :docker do
-        info "Pushing #{docker_image}:#{docker_tag} to Docker Hub"
-        sh "docker push '#{docker_image}:#{docker_tag}'"
+    desc 'Publish docker image'
+    task push: :docker do
+      info "Pushing #{docker_image}:#{docker_tag} to Docker Hub"
+      sh "docker push '#{docker_image}:#{docker_tag}'"
 
-        info "Pushing #{docker_image}:#{docker_tag_short} to Docker Hub"
-        sh "docker push '#{docker_image}:#{docker_tag_short}'"
+      info "Pushing #{docker_image}:#{docker_tag_short} to Docker Hub"
+      sh "docker push '#{docker_image}:#{docker_tag_short}'"
 
-        case git_branch
-        when 'master'
-          info "Pushing #{docker_image}:latest to Docker Hub"
-          sh "docker push '#{docker_image}:latest'"
-        else
-          info "Pushing #{docker_image}:#{git_branch} to Docker Hub"
-          sh "docker push '#{docker_image}:#{git_branch}'"
-        end
+      case git_branch
+      when 'master'
+        info "Pushing #{docker_image}:latest to Docker Hub"
+        sh "docker push '#{docker_image}:latest'"
+      else
+        info "Pushing #{docker_image}:#{git_branch} to Docker Hub"
+        sh "docker push '#{docker_image}:#{git_branch}'"
       end
     end
   end
