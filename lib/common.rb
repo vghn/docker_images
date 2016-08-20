@@ -54,5 +54,7 @@ def increment_version(level)
 end
 
 def configure_changelog(config, release: nil)
-  config.future_release = "v#{release}" if release
+  config.bug_labels         = 'Type: Bug'
+  config.enhancement_labels = 'Type: Enhancement'
+  config.future_release     = "v#{release}" if release
 end
