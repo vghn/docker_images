@@ -57,9 +57,10 @@ task gc: :docker do
 end
 
 IMAGES.each do |image|
-  docker_dir   = File.basename(image)
-  docker_image = "#{REPOSITORY}/#{IMAGE_PREFIX}-#{docker_dir}"
-  docker_tag   = "#{version}-#{git_commit}"
+  docker_dir       = File.basename(image)
+  docker_image     = "#{REPOSITORY}/#{IMAGE_PREFIX}-#{docker_dir}"
+  docker_tag       = "#{version}"
+  docker_tag_short = "#{version_hash[:major]}.#{version_hash[:minor]}.#{version_hash[:patch]}"
 
   namespace docker_dir.to_sym do |_args|
     RSpec::Core::RakeTask.new(spec: [:docker]) do |t|
@@ -88,8 +89,8 @@ IMAGES.each do |image|
       info "Building #{docker_image}:#{docker_tag}"
       sh "#{cmd} -t #{docker_image}:#{docker_tag} ."
 
-      info "Tagging #{docker_image}:#{version}"
-      sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:#{version}"
+      info "Tagging #{docker_image}:#{docker_tag_short}"
+      sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:#{docker_tag_short}"
 
       case git_branch
       when 'master'
@@ -106,8 +107,8 @@ IMAGES.each do |image|
       info "Pushing #{docker_image}:#{docker_tag} to Docker Hub"
       sh "docker push '#{docker_image}:#{docker_tag}'"
 
-      info "Pushing #{docker_image}:#{version} to Docker Hub"
-      sh "docker push '#{docker_image}:#{version}'"
+      info "Pushing #{docker_image}:#{docker_tag_short} to Docker Hub"
+      sh "docker push '#{docker_image}:#{docker_tag_short}'"
 
       case git_branch
       when 'master'
