@@ -1,7 +1,7 @@
 require 'rainbow'
 
 def version
-  File.read('VERSION').strip
+  `git describe --always --tags`
 end
 
 def git_commit
@@ -32,4 +32,27 @@ end
 
 def command?(command)
   system("command -v #{command} >/dev/null 2>&1")
+end
+
+def version_hash
+  @version_hash ||= begin
+    v = version
+    {}.tap do |h|
+      h[:major], h[:minor], h[:patch], h[:rev], h[:rev_hash] = v[1..-1].split(/[.-]/)
+    end
+  end
+end
+
+def increment_version(level)
+  v = version_hash.dup
+  v[level] = v[level].to_i + 1
+
+  to_zero = LEVELS[LEVELS.index(level) + 1..LEVELS.size]
+  to_zero.each { |z| v[z] = 0 }
+
+  v
+end
+
+def configure_changelog(config, release: nil)
+  config.future_release = "v#{release}" if release
 end

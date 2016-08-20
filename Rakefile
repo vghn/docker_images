@@ -22,9 +22,20 @@ RuboCop::RakeTask.new(:rubocop) do |task|
   task.patterns = ['tasks/**/*.rake', 'lib/**/*.rb']
 end
 
+# GitHub CHANGELOG generator
+require 'github_changelog_generator/task'
+GitHubChangelogGenerator::RakeTask.new(:unreleased) do |config|
+  configure_changelog(config)
+end
+
 # List all tasks by default
 task :default do
   puts `rake -T`
+end
+
+desc 'Display version'
+task :version do
+  puts "Current version: #{version}"
 end
 
 task :docker do
@@ -129,13 +140,22 @@ task test: [
   :spec
 ]
 
-# Requires the VGS library (https://github.com/vghn/vgs)
-desc 'Release'
-task :release do
-  sh <<-EOS
-  bash -euo pipefail -c '\
-    { . /opt/vgs/load 2>/dev/null || . ~/vgs/load 2>/dev/null || true ;} && \
-    vgs_release --sign --type #{RELEASE_TYPE} --github-url #{git_url} \
-  '
-  EOS
+namespace :release do
+  LEVELS = [:major, :minor, :patch].freeze
+  LEVELS.each do |level|
+    desc "Increment #{level} version"
+    task level.to_sym do
+      v       = increment_version(level)
+      release = "#{v[:major]}.#{v[:minor]}.#{v[:patch]}"
+
+      GitHubChangelogGenerator::RakeTask.new(:latest_release) do |config|
+        configure_changelog(config, release: release)
+      end
+      Rake::Task['latest_release'].invoke
+      sh "git commit --gpg-sign --message 'Release v#{release}' CHANGELOG.md"
+
+      sh "git tag --sign v#{release} --message 'Release v#{release}'"
+      sh "git push --follow-tags"
+    end
+  end
 end
