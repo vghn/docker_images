@@ -23,16 +23,20 @@ script:
   - bundle exec rake ${IMAGE}:build
   - bundle exec rake ${IMAGE}:spec
 before_deploy:
-  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
-  - echo "$DEPLOY_RSA" | base64 --decode --ignore-garbage > ~/.ssh/deploy_rsa;
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
+    echo "$DEPLOY_RSA" | base64 --decode --ignore-garbage > ~/.ssh/deploy_rsa;
     chmod 600 ~/.ssh/deploy_rsa;
     eval "$(ssh-agent -s)";
     ssh-add ~/.ssh/deploy_rsa;
-    ssh-keyscan -H puppet.ghn.me >> ~/.ssh/known_hosts
+    ssh-keyscan -H puppet.ghn.me >> ~/.ssh/known_hosts;
+    fi
 deploy:
   provider: script
-  script: bundle exec rake ${IMAGE}:push;
-          ssh ubuntu@puppet.ghn.me "/opt/vpm/bin/deploy ${IMAGE}"
+  script: if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+          bundle exec rake ${IMAGE}:push;
+          ssh ubuntu@puppet.ghn.me "/opt/vpm/bin/deploy ${IMAGE}";
+          fi
   skip_cleanup: true
   on:
     all_branches: true
