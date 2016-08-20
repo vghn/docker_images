@@ -1,7 +1,7 @@
 require 'rainbow'
 
 def version
-  `git describe --always --tags`
+  `git describe --always --tags`.strip
 end
 
 def git_commit
