@@ -1,5 +1,14 @@
 # Change Log
 
+## [v0.0.5](https://github.com/vghn/puppet-docker/tree/v0.0.5) (2016-08-20)
+[Full Changelog](https://github.com/vghn/puppet-docker/compare/v0.0.4...v0.0.5)
+
+**Implemented enhancements:**
+
+- Automate change log generation [\#2](https://github.com/vghn/puppet-docker/issues/2)
+- Update Readme [\#4](https://github.com/vghn/puppet-docker/pull/4) ([vladgh](https://github.com/vladgh))
+- Automate change log generation [\#3](https://github.com/vghn/puppet-docker/pull/3) ([vladgh](https://github.com/vladgh))
+
 ## [v0.0.4](https://github.com/vghn/puppet-docker/tree/v0.0.4) (2016-08-19)
 [Full Changelog](https://github.com/vghn/puppet-docker/compare/v0.0.3...v0.0.4)
 
