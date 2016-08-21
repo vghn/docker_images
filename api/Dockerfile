@@ -27,13 +27,12 @@ COPY app /app
 # Copy config files
 COPY r10k.yaml /etc/puppetlabs/r10k/r10k.yaml
 
-# Configure entrypoint
-COPY entrypoint.sh /
-ENTRYPOINT ["/entrypoint.sh"]
+# Start server
+ENTRYPOINT [ "sh", "-c", "bundle exec puma --environment $RACK_ENV --port $RACK_PORT"]
 
 # Health
 HEALTHCHECK --interval=30s --timeout=30s --retries=10 CMD \
-  curl -skf https://localhost:8523/status || exit 1
+  curl -sf "http://localhost:$RACK_PORT/status" || exit 1
 
 # Metadata params
 ARG VERSION

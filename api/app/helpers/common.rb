@@ -36,16 +36,14 @@ end
 # Download vault
 def download_vault
   log.info 'Download vault'
-  `aws s3 sync "#{ENV['VAULT_S3PATH']}/" \
-    '/etc/puppetlabs/vault/' --delete`
+  `bash -c '. /opt/vpm/envrc && aws s3 sync "$VAULT_S3PATH" /etc/puppetlabs/vault/ --delete'`
   File.write('/var/local/deployed_vault', Time.now.localtime)
 end
 
 # Download Hiera data
 def download_hieradata
   log.info 'Download Hiera data'
-  `aws s3 sync "#{ENV['HIERA_S3PATH']}/" \
-    '/etc/puppetlabs/hieradata/' --delete`
+  `bash -c '. /opt/vpm/envrc && aws s3 sync "$HIERA_S3PATH" /etc/puppetlabs/hieradata/ --delete'`
   File.write('/var/local/deployed_hieradata', Time.now.localtime)
 end
 
