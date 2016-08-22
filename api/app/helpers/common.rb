@@ -17,34 +17,26 @@ def config
   end
 end
 
-# Download VGS Library
-def download_vgs
-  unless File.exist?('/opt/vgs/load')
-    log.info 'Download VGS'
-    `git clone https://github.com/vghn/vgs.git /opt/vgs`
-  end
-end
-
-# Download the Puppet control repo
-def download_vpm
-  unless File.exist?('/opt/vpm/envrc')
-    log.info 'Download the Puppet control repo'
-    `git clone https://github.com/vghn/puppet.git /opt/vpm`
-  end
-end
-
 # Download vault
 def download_vault
-  log.info 'Download vault'
-  puts `bash -c '. /opt/vpm/envrc && aws s3 sync "$VAULT_S3PATH" /etc/puppetlabs/vault/ --delete'`
-  File.write('/var/local/deployed_vault', Time.now.localtime)
+  if ENV['VAULT_S3PATH']
+    log.info 'Download vault'
+    puts `aws s3 sync #{ENV['VAULT_S3PATH']} /etc/puppetlabs/vault/ --delete`
+    File.write('/var/local/deployed_vault', Time.now.localtime)
+  else
+    log.warn 'Skip downloading vault because VAULT_S3PATH is not set!'
+  end
 end
 
 # Download Hiera data
 def download_hieradata
-  log.info 'Download Hiera data'
-  puts `bash -c '. /opt/vpm/envrc && aws s3 sync "$HIERA_S3PATH" /etc/puppetlabs/hieradata/ --delete'`
-  File.write('/var/local/deployed_hieradata', Time.now.localtime)
+  if ENV['HIERA_S3PATH']
+    log.info 'Download Hiera data'
+    puts `aws s3 sync #{ENV['HIERA_S3PATH']} /etc/puppetlabs/hieradata/ --delete`
+    File.write('/var/local/deployed_hieradata', Time.now.localtime)
+  else
+    log.warn 'Skip downloading hiera data because HIERA_S3PATH is not set!'
+  end
 end
 
 # Deploy R10K
@@ -56,8 +48,6 @@ end
 
 # Deployment
 def deploy
-  download_vgs
-  download_vpm
   download_vault
   download_hieradata
   deploy_r10k
@@ -66,8 +56,6 @@ end
 
 # Asynchronous Deployment
 def async_deploy
-  Thread.new { download_vgs }
-  Thread.new { download_vpm }
   Thread.new { download_vault }
   Thread.new { download_hieradata }
   Thread.new { deploy_r10k }
