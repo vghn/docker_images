@@ -1,11 +1,29 @@
 # Change Log
 
-## [v0.0.5](https://github.com/vghn/puppet-docker/tree/v0.0.5) (2016-08-20)
-[Full Changelog](https://github.com/vghn/puppet-docker/compare/v0.0.4...v0.0.5)
+## [v0.0.6](https://github.com/vghn/puppet-docker/tree/v0.0.6) (2016-08-22)
+[Full Changelog](https://github.com/vghn/puppet-docker/compare/v0.0.5...v0.0.6)
 
 **Implemented enhancements:**
 
+- Remove VPM and VGS from api deployment [\#15](https://github.com/vghn/puppet-docker/issues/15)
+- Update README for TravisCI deployment [\#7](https://github.com/vghn/puppet-docker/issues/7)
+- Create better labels [\#5](https://github.com/vghn/puppet-docker/issues/5)
+- Improve SSL grade for API [\#1](https://github.com/vghn/puppet-docker/issues/1)
+
+**Merged pull requests:**
+
+- Improve API image [\#8](https://github.com/vghn/puppet-docker/pull/8) ([vladgh](https://github.com/vladgh))
+- Improve labels [\#6](https://github.com/vghn/puppet-docker/pull/6) ([vladgh](https://github.com/vladgh))
+
+## [v0.0.5](https://github.com/vghn/puppet-docker/tree/v0.0.5) (2016-08-20)
+[Full Changelog](https://github.com/vghn/puppet-docker/compare/v0.0.4...v0.0.5)
+
+**Closed issues:**
+
 - Automate change log generation [\#2](https://github.com/vghn/puppet-docker/issues/2)
+
+**Merged pull requests:**
+
 - Update Readme [\#4](https://github.com/vghn/puppet-docker/pull/4) ([vladgh](https://github.com/vladgh))
 - Automate change log generation [\#3](https://github.com/vghn/puppet-docker/pull/3) ([vladgh](https://github.com/vladgh))
 
