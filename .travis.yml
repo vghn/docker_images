@@ -10,7 +10,8 @@ branches:
 env:
   global:
     - DOCKER_REPOSITORY=vladgh
-    - DOCKER_IMAGE_PREFIX=vpm
+    - DOCKER_IMAGE_PREFIX=vpm-
+    - DOCKER_BUILD_ARGS=false
   matrix:
     - IMAGE=api
     - IMAGE=server
