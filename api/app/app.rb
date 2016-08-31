@@ -1,4 +1,5 @@
 require 'json'
+require 'logger'
 require 'rack/ssl'
 require 'sinatra'
 require 'sinatra/base'
@@ -8,9 +9,24 @@ Dir.glob('./helpers/*.rb').each { |file| require file }
 
 # Sinatra Application Class
 class API < Sinatra::Base
+  # Force HTTPS
   use Rack::SSL
-  configure do
+
+  # Logging
+  configure :production, :development do
     enable :logging
+  end
+
+  configure :test do
+    set :logging, ::Logger::ERROR
+  end
+
+  configure :development do
+    set :logging, ::Logger::DEBUG
+  end
+
+  configure :production do
+    set :logging, ::Logger::INFO
   end
 
   # Intitial deployment
