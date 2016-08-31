@@ -25,6 +25,7 @@ def download_vault
     log.info 'Download vault'
     puts `aws s3 sync #{ENV['VAULT_S3PATH']} /etc/puppetlabs/vault/ --delete`
     File.write('/var/local/deployed_vault', Time.now.localtime)
+    log.info 'Vault downloaded'
   else
     log.warn 'Skip downloading vault because VAULT_S3PATH is not set!'
   end
@@ -36,6 +37,7 @@ def download_hieradata
     log.info 'Download Hiera data'
     puts `aws s3 sync #{ENV['HIERA_S3PATH']} /etc/puppetlabs/hieradata/ --delete`
     File.write('/var/local/deployed_hieradata', Time.now.localtime)
+    log.info 'Hiera data downloaded'
   else
     log.warn 'Skip downloading hiera data because HIERA_S3PATH is not set!'
   end
@@ -46,22 +48,15 @@ def deploy_r10k
   log.info 'Deploy R10K'
   `r10k deploy environment --puppetfile`
   File.write('/var/local/deployed_r10k', Time.now.localtime)
+  log.info 'R10K deployed'
 end
 
 # Deployment
 def deploy
-  download_vault
-  download_hieradata
-  deploy_r10k
-  log.info 'Deployment finished'
-end
-
-# Asynchronous Deployment
-def async_deploy
+  log.info 'Deployment will start in the background'
   Thread.new { download_vault }
   Thread.new { download_hieradata }
   Thread.new { deploy_r10k }
-  log.info 'Deployment started in the background'
 end
 
 def protected!
@@ -79,40 +74,20 @@ end
 
 def verify_github_signature(payload_body)
   signature = 'sha1=' + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha1'), config['github_secret'], payload_body)
-  return halt 500, 'Signatures did not match!' unless Rack::Utils.secure_compare(signature, env['HTTP_X_HUB_SIGNATURE'])
+  return halt 500, 'Signatures did not match!' unless Rack::Utils.secure_compare(signature, request.env['HTTP_X_HUB_SIGNATURE'])
 end
 
-def verify_travis_signature(payload_body)
-  payload   = JSON.parse(payload_body).fetch('payload', '')
+def verify_travis_signature(payload)
   signature = request.env['HTTP_SIGNATURE']
+  pkey      = OpenSSL::PKey::RSA.new(travis_public_key)
 
-  pkey = OpenSSL::PKey::RSA.new(public_key)
-
-  if pkey.verify(
-      OpenSSL::Digest::SHA1.new,
-      Base64.decode64(signature),
-      payload.to_json
-    )
-    status 200
-    'verification succeeded'
-  else
-    status 400
-    'verification failed'
-  end
-rescue => e
-  logger.info "exception=#{e.class} message=\"#{e.message}\""
-  logger.debug e.backtrace.join("\n")
-
-  status 500
-  'exception encountered while verifying signature'
+  return halt 500, 'Signatures did not match!' unless pkey.verify(OpenSSL::Digest::SHA1.new, Base64.decode64(signature), payload.to_json)
 end
 
 def travis_public_key
-  conn = Faraday.new(url: TRAVIS_API_HOST) do |faraday|
+  conn = Faraday.new(url: 'https://api.travis-ci.org') do |faraday|
     faraday.adapter Faraday.default_adapter
   end
   response = conn.get '/config'
   JSON.parse(response.body)['config']['notifications']['webhook']['public_key']
-rescue
-  ''
 end

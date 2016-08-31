@@ -9,9 +9,6 @@ Dir.glob('./helpers/*.rb').each { |file| require file }
 
 # Sinatra Application Class
 class API < Sinatra::Base
-  DEFAULT_TRAVIS_API_HOST = 'https://api.travis-ci.org'
-  TRAVIS_API_HOST = ENV.fetch('TRAVIS_API_HOST', DEFAULT_TRAVIS_API_HOST)
-
   # Force HTTPS
   use Rack::SSL
 
@@ -43,13 +40,10 @@ class API < Sinatra::Base
   end
 
   post '/travis' do
-    request.body.rewind
-    payload_body = request.body.read
-    verify_travis_signature(payload_body)
-
     payload = JSON.parse(params[:payload])
-    async_deploy
+    verify_travis_signature(payload)
 
+    deploy
     log.info "Deployment requested from build ##{payload['number']} for the #{payload['branch']} " \
              "branch of repository #{payload['repository']['name']}"
 
@@ -58,11 +52,10 @@ class API < Sinatra::Base
 
   post '/github' do
     request.body.rewind
-    payload_body = request.body.read
-    verify_github_signature(payload_body)
-
+    verify_github_signature(request.body.read)
     payload = JSON.parse(params[:payload])
-    async_deploy
+
+    deploy
     log.info "Requested by GitHub user @#{payload['sender']['login']}"
 
     'Deployment started'
@@ -86,7 +79,7 @@ class API < Sinatra::Base
       case text
       when 'deploy'
         # Only use the threaded deployment because of the short timeout
-        async_deploy
+        deploy
         'Deployment started :thumbsup:'
       else
         "I don't understand '#{text}' :cry:"
