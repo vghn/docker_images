@@ -1,7 +1,9 @@
+require 'base64'
+require 'faraday'
+require 'json'
 require 'logger'
 require 'openssl'
 require 'yaml'
-require 'digest/sha2'
 
 # Logging
 def log
@@ -80,7 +82,37 @@ def verify_github_signature(payload_body)
   return halt 500, 'Signatures did not match!' unless Rack::Utils.secure_compare(signature, env['HTTP_X_HUB_SIGNATURE'])
 end
 
-def verify_travis_request
-  digest = Digest::SHA2.new.update("#{env['HTTP_TRAVIS_REPO_SLUG']}#{config['travis_token']}")
-  return halt 403, 'Unauthorized TravisCI request!' unless digest.to_s == env['HTTP_AUTHORIZATION']
+def verify_travis_signature(payload_body)
+  payload   = JSON.parse(payload_body).fetch('payload', '')
+  signature = request.env['HTTP_SIGNATURE']
+
+  pkey = OpenSSL::PKey::RSA.new(public_key)
+
+  if pkey.verify(
+      OpenSSL::Digest::SHA1.new,
+      Base64.decode64(signature),
+      payload.to_json
+    )
+    status 200
+    'verification succeeded'
+  else
+    status 400
+    'verification failed'
+  end
+rescue => e
+  logger.info "exception=#{e.class} message=\"#{e.message}\""
+  logger.debug e.backtrace.join("\n")
+
+  status 500
+  'exception encountered while verifying signature'
+end
+
+def travis_public_key
+  conn = Faraday.new(url: TRAVIS_API_HOST) do |faraday|
+    faraday.adapter Faraday.default_adapter
+  end
+  response = conn.get '/config'
+  JSON.parse(response.body)['config']['notifications']['webhook']['public_key']
+rescue
+  ''
 end

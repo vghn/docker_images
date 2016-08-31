@@ -9,6 +9,9 @@ Dir.glob('./helpers/*.rb').each { |file| require file }
 
 # Sinatra Application Class
 class API < Sinatra::Base
+  DEFAULT_TRAVIS_API_HOST = 'https://api.travis-ci.org'
+  TRAVIS_API_HOST = ENV.fetch('TRAVIS_API_HOST', DEFAULT_TRAVIS_API_HOST)
+
   # Force HTTPS
   use Rack::SSL
 
@@ -40,15 +43,16 @@ class API < Sinatra::Base
   end
 
   post '/travis' do
-    payload = JSON.parse(params[:payload])
-    build   = payload['number']
-    branch  = payload['branch']
-    repo    = payload['repository']['name']
+    request.body.rewind
+    payload_body = request.body.read
+    verify_travis_signature(payload_body)
 
-    verify_travis_request
+    payload = JSON.parse(params[:payload])
     async_deploy
-    log.info "Deployment requested from build ##{build} for the #{branch} " \
-             "branch of repository #{repo}"
+
+    log.info "Deployment requested from build ##{payload['number']} for the #{payload['branch']} " \
+             "branch of repository #{payload['repository']['name']}"
+
     'Deployment started'
   end
 
