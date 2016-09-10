@@ -4,16 +4,18 @@ require_relative 'lib/common'
 
 # VARs
 REPOSITORY   = ENV['DOCKER_REPOSITORY']   || 'vladgh'
-IMAGE_PREFIX = ENV['DOCKER_IMAGE_PREFIX'] || ''
+IMAGE_PREFIX = ENV['DOCKER_IMAGE_PREFIX'] || 'vpm-'
 NO_CACHE     = ENV['DOCKER_NO_CACHE']     || false
-BUILD_ARGS   = ENV['DOCKER_BUILD_ARGS']   || false
+BUILD_ARGS   = ENV['DOCKER_BUILD_ARGS']   || true
 RELEASE_TYPE = ENV['RELEASE_TYPE']        || 'patch'
-BUILD_DATE   = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
 
+# Internals
+BUILD_DATE = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
 IMAGES = Dir.glob('*').select do |dir|
   File.directory?(dir) && File.exist?("#{dir}/Dockerfile")
 end
 
+# RuboCop
 require 'rubocop/rake_task'
 desc 'Run RuboCop on the tasks and lib directory'
 RuboCop::RakeTask.new(:rubocop) do |task|
