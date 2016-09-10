@@ -1,5 +1,12 @@
 # Change Log
 
+## [v0.0.9](https://github.com/vghn/puppet-docker/tree/v0.0.9) (2016-09-10)
+[Full Changelog](https://github.com/vghn/puppet-docker/compare/v0.0.8...v0.0.9)
+
+**Implemented enhancements:**
+
+- Add Microbadger webhooks [\#19](https://github.com/vghn/puppet-docker/issues/19)
+
 ## [v0.0.8](https://github.com/vghn/puppet-docker/tree/v0.0.8) (2016-09-10)
 [Full Changelog](https://github.com/vghn/puppet-docker/compare/v0.0.7...v0.0.8)
 
