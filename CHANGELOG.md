@@ -5,6 +5,7 @@
 
 **Implemented enhancements:**
 
+- Add README badges [\#20](https://github.com/vghn/puppet-docker/issues/20)
 - Add Microbadger webhooks [\#19](https://github.com/vghn/puppet-docker/issues/19)
 
 ## [v0.0.8](https://github.com/vghn/puppet-docker/tree/v0.0.8) (2016-09-10)
