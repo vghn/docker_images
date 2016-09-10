@@ -1,5 +1,12 @@
 # Change Log
 
+## [v0.0.8](https://github.com/vghn/puppet-docker/tree/v0.0.8) (2016-09-10)
+[Full Changelog](https://github.com/vghn/puppet-docker/compare/v0.0.7...v0.0.8)
+
+**Fixed bugs:**
+
+- Clean-up Rakefile [\#18](https://github.com/vghn/puppet-docker/issues/18)
+
 ## [v0.0.7](https://github.com/vghn/puppet-docker/tree/v0.0.7) (2016-09-10)
 [Full Changelog](https://github.com/vghn/puppet-docker/compare/v0.0.6...v0.0.7)
 
