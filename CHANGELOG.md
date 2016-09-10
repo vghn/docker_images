@@ -1,5 +1,13 @@
 # Change Log
 
+## [v0.0.7](https://github.com/vghn/puppet-docker/tree/v0.0.7) (2016-09-10)
+[Full Changelog](https://github.com/vghn/puppet-docker/compare/v0.0.6...v0.0.7)
+
+**Implemented enhancements:**
+
+- Replace TravisCI slug/token webhook with verified signature [\#17](https://github.com/vghn/puppet-docker/issues/17)
+- Add environment aware logging [\#16](https://github.com/vghn/puppet-docker/issues/16)
+
 ## [v0.0.6](https://github.com/vghn/puppet-docker/tree/v0.0.6) (2016-08-22)
 [Full Changelog](https://github.com/vghn/puppet-docker/compare/v0.0.5...v0.0.6)
 
