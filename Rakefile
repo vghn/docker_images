@@ -6,8 +6,6 @@ require_relative 'lib/common'
 REPOSITORY   = ENV['DOCKER_REPOSITORY']   || 'vladgh'
 IMAGE_PREFIX = ENV['DOCKER_IMAGE_PREFIX'] || 'vpm-'
 NO_CACHE     = ENV['DOCKER_NO_CACHE']     || false
-BUILD_ARGS   = ENV['DOCKER_BUILD_ARGS']   || true
-RELEASE_TYPE = ENV['RELEASE_TYPE']        || 'patch'
 
 # Internals
 BUILD_DATE = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -19,7 +17,7 @@ end
 require 'rubocop/rake_task'
 desc 'Run RuboCop on the tasks and lib directory'
 RuboCop::RakeTask.new(:rubocop) do |task|
-  task.patterns = ['rakelib/**/*.rake', 'lib/**/*.rb']
+  task.patterns = ['rakelib/**/*.rake', 'lib/**/*.rb', 'Rakefile']
 end
 
 # GitHub CHANGELOG generator
@@ -39,9 +37,7 @@ task :version do
 end
 
 task :docker do
-  unless command? 'docker'
-    raise 'These tasks require docker to be installed'
-  end
+  raise 'These tasks require docker to be installed' unless command? 'docker'
 end
 
 desc 'List all Docker images'
@@ -59,7 +55,7 @@ end
 IMAGES.each do |image|
   docker_dir       = File.basename(image)
   docker_image     = "#{REPOSITORY}/#{IMAGE_PREFIX}#{docker_dir}"
-  docker_tag       = "#{version}"
+  docker_tag       = version.to_s
   docker_tag_short = "#{version_hash[:major]}.#{version_hash[:minor]}.#{version_hash[:patch]}"
 
   namespace docker_dir.to_sym do |_args|
@@ -75,13 +71,11 @@ IMAGES.each do |image|
 
     desc 'Build docker image'
     task build: :docker do
-      cmd =  "cd #{docker_dir} && docker build"
-      if BUILD_ARGS
-        cmd += " --build-arg VERSION=#{docker_tag}"
-        cmd += " --build-arg VCS_URL=#{git_url}"
-        cmd += " --build-arg VCS_REF=#{git_commit}"
-        cmd += " --build-arg BUILD_DATE=#{BUILD_DATE}"
-      end
+      cmd  = "cd #{docker_dir} && docker build"
+      cmd += " --build-arg VERSION=#{docker_tag}"
+      cmd += " --build-arg VCS_URL=#{git_url}"
+      cmd += " --build-arg VCS_REF=#{git_commit}"
+      cmd += " --build-arg BUILD_DATE=#{BUILD_DATE}"
 
       if NO_CACHE
         info "Ignoring layer cache for #{docker_image}"
@@ -158,7 +152,7 @@ namespace :release do
       sh "git commit --gpg-sign --message 'Release v#{release}' CHANGELOG.md"
 
       sh "git tag --sign v#{release} --message 'Release v#{release}'"
-      sh "git push --follow-tags"
+      sh 'git push --follow-tags'
     end
   end
 end
