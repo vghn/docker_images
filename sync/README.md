@@ -1,5 +1,12 @@
 # Sync Agent
 
+[![Docker Layers](https://images.microbadger.com/badges/image/vladgh/vpm-sync.svg)](http://microbadger.com/images/vladgh/vpm-sync)
+[![Docker Version](https://images.microbadger.com/badges/version/vladgh/vpm-sync.svg)](http://microbadger.com/images/vladgh/vpm-sync)
+[![Docker Commit](https://images.microbadger.com/badges/commit/vladgh/vpm-sync.svg)](http://microbadger.com/images/vladgh/vpm-sync)
+[![License](https://images.microbadger.com/badges/license/vladgh/vpm-sync.svg)](http://microbadger.com/images/vladgh/vpm-sync)
+[![Docker Pulls](https://img.shields.io/docker/pulls/vladgh/vpm-sync.svg)](https://hub.docker.com/r/vladgh/vpm-sync)
+[![Build Status](https://travis-ci.org/vghn/puppet-docker.svg?branch=master)](https://travis-ci.org/vghn/puppet-docker)
+
 Watches for changes in a directory and syncs them to S3.
 The container downloads first the S3 files (overwriting the local ones), and
 then runs `aws s3 sync --delete` at the specified interval or when files are
