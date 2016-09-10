@@ -13,9 +13,9 @@ env:
     - DOCKER_IMAGE_PREFIX=vpm-
     - DOCKER_BUILD_ARGS=false
   matrix:
-    - IMAGE=api
-    - IMAGE=server
-    - IMAGE=sync
+    - IMAGE=api MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-api/PBcHv5lkwKizG6tVusgUQtvx99c='
+    - IMAGE=server MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-server/q6ABG6ghDr0SoVFXAZ8V6Y0kqdA='
+    - IMAGE=sync MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-sync/2lhGgK0gfhuV-IBYhso7adDxJzA='
 before_install:
   - sudo apt-get -qy update;
     sudo apt-get -qy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install docker-engine
@@ -37,7 +37,8 @@ deploy:
   script: if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
           bundle exec rake ${IMAGE}:push;
           ssh ubuntu@puppet.ghn.me "/opt/vpm/bin/deploy ${IMAGE}";
-          fi
+          fi;
+          curl -X POST "$MICROBADGER_WEBHOOK"
   skip_cleanup: true
   on:
     all_branches: true
