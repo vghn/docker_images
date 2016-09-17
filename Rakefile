@@ -20,6 +20,17 @@ RuboCop::RakeTask.new(:rubocop) do |task|
   task.patterns = ['rakelib/**/*.rake', 'lib/**/*.rb', 'Rakefile']
 end
 
+# Reek
+require 'reek/rake/task'
+Reek::Rake::Task.new do |task|
+  task.fail_on_error = false
+  task.reek_opts     = '-U'
+end
+
+# Ruby Critic
+require "rubycritic/rake_task"
+RubyCritic::RakeTask.new
+
 # GitHub CHANGELOG generator
 require 'github_changelog_generator/task'
 GitHubChangelogGenerator::RakeTask.new(:unreleased) do |config|

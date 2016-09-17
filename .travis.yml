@@ -17,8 +17,8 @@ env:
     - IMAGE=server MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-server/q6ABG6ghDr0SoVFXAZ8V6Y0kqdA='
     - IMAGE=sync MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-sync/2lhGgK0gfhuV-IBYhso7adDxJzA='
 before_install:
-  - sudo apt-get -qy update;
-    sudo apt-get -qy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install docker-engine
+  - sudo apt-get -qy update && sudo apt-get -qy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install docker-engine
+  - docker --version
 install: bundle install --path vendor/bundle
 script:
   - bundle exec rake ${IMAGE}:build
