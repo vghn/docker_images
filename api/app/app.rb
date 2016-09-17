@@ -40,9 +40,8 @@ class API < Sinatra::Base
   end
 
   post '/travis' do
-    request.body.rewind
-    verify_travis_signature(request.body.read)
     payload = JSON.parse(params[:payload])
+    verify_travis_signature(payload)
 
     deploy
     log.info "Deployment requested from build ##{payload['number']} for the #{payload['branch']} " \

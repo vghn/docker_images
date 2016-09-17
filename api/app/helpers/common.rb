@@ -77,10 +77,9 @@ def verify_github_signature(payload_body)
   return halt 500, 'Signatures did not match!' unless Rack::Utils.secure_compare(signature, request.env['HTTP_X_HUB_SIGNATURE'])
 end
 
-def verify_travis_signature(payload_body)
+def verify_travis_signature(payload)
   signature = request.env['HTTP_SIGNATURE']
   pkey      = OpenSSL::PKey::RSA.new(travis_public_key)
-  payload   = JSON.parse(payload_body)
 
   return halt 500, 'Signatures did not match!' unless pkey.verify(OpenSSL::Digest::SHA1.new, Base64.decode64(signature), payload.to_json)
 end
