@@ -10,8 +10,6 @@ branches:
 env:
   global:
     - DOCKER_REPOSITORY=vladgh
-    - DOCKER_IMAGE_PREFIX=vpm-
-    - DOCKER_BUILD_ARGS=false
   matrix:
     - IMAGE=api MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-api/PBcHv5lkwKizG6tVusgUQtvx99c='
     - IMAGE=server MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-server/q6ABG6ghDr0SoVFXAZ8V6Y0kqdA='
