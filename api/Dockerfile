@@ -1,9 +1,16 @@
-FROM ruby:alpine
+FROM ruby:2.3-alpine
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
-RUN apk --no-cache add openssl bash git python py-pip groff && \
-    pip install awscli
+RUN apk --no-cache add \
+    bash=4.3.42-r3 \
+    git=2.8.3-r0 \
+    groff=1.22.3-r1 \
+    openssl=1.0.2h-r2 \
+    python=2.7.12-r0 && \
+    apk --no-cache add --virtual build-dependencies py-pip && \
+    pip install awscli==1.10.65 && \
+    apk del build-dependencies
 
 # Set working directory
 WORKDIR /app
@@ -19,7 +26,7 @@ ENV RACK_PORT=8523 \
     RACK_ENV=production \
     AWS_DEFAULT_REGION=us-east-1
 
-EXPOSE $RACK_PORT
+EXPOSE 8523
 
 # Copy application
 COPY app /app

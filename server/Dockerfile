@@ -11,8 +11,8 @@ ENV PATH=/opt/puppetlabs/server/bin:/opt/puppetlabs/puppet/bin:/opt/puppetlabs/b
 # Installation
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update -y && \
-    apt-get install -y --no-install-recommends wget ca-certificates && \
-    wget -O "/tmp/${PUPPETLABS_RELEASE}.deb" \
+    apt-get install -y --no-install-recommends wget=1.17.1-1ubuntu1.1 \
+    ca-certificates=20160104ubuntu1 && wget -O "/tmp/${PUPPETLABS_RELEASE}.deb" \
     "https://apt.puppetlabs.com/${PUPPETLABS_RELEASE}.deb" && \
     dpkg -i "/tmp/${PUPPETLABS_RELEASE}.deb" && \
     apt-get update -y && apt-get install -y --no-install-recommends \

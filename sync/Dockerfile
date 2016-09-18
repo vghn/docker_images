@@ -1,13 +1,17 @@
-FROM alpine:latest
+FROM alpine:3.4
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Environment
 ENV AWS_DEFAULT_REGION=us-east-1
 
 # Install packages
-RUN apk --no-cache add bash python git inotify-tools && \
+RUN apk --no-cache add \
+    bash=4.3.42-r3 \
+    git=2.8.3-r0 \
+    inotify-tools=3.14-r2 \
+    python=2.7.12-r0 && \
     apk --no-cache add --virtual build-dependencies py-pip && \
-    pip install awscli && \
+    pip install awscli==1.10.65 && \
     apk del build-dependencies
 
 # Configure entrypoint
