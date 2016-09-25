@@ -34,7 +34,7 @@ ENTRYPOINT [ "sh", "-c", "bundle exec puma --environment $RACK_ENV --port $RACK_
 
 # Health
 HEALTHCHECK --interval=30s --timeout=30s --retries=10 CMD \
-  curl --fail "http://localhost:$RACK_PORT/status" || exit 1
+  curl --silent --fail "http://localhost:$RACK_PORT/status" || exit 1
 
 # Metadata params
 ARG VERSION
