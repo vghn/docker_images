@@ -2,14 +2,9 @@ FROM ruby:2.3-alpine
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
-RUN apk --no-cache add \
-    bash=4.3.42-r3 \
-    git=2.8.3-r0 \
-    groff=1.22.3-r1 \
-    openssl=1.0.2h-r2 \
-    python=2.7.12-r0 && \
+RUN apk --no-cache add bash git groff openssl python && \
     apk --no-cache add --virtual build-dependencies py-pip && \
-    pip install awscli==1.10.65 && \
+    pip install awscli && \
     apk del build-dependencies
 
 # Set working directory
@@ -39,7 +34,7 @@ ENTRYPOINT [ "sh", "-c", "bundle exec puma --environment $RACK_ENV --port $RACK_
 
 # Health
 HEALTHCHECK --interval=30s --timeout=30s --retries=10 CMD \
-  curl -sf "http://localhost:$RACK_PORT/status" || exit 1
+  curl --fail "http://localhost:$RACK_PORT/status" || exit 1
 
 # Metadata params
 ARG VERSION

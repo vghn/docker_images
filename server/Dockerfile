@@ -39,11 +39,12 @@ CMD ["puppetserver", "foreground"]
 
 # Health
 HEALTHCHECK --interval=30s --timeout=30s --retries=20 CMD \
-  curl -H 'Accept: pson' \
+  curl --fail -H 'Accept: pson' \
   --cert   $(puppet config print hostcert) \
   --key    $(puppet config print hostprivkey) \
   --cacert $(puppet config print localcacert) \
-  https://$(puppet config print server):8140/production/status/no_key
+  https://$(puppet config print server):8140/production/status/no_key \
+  || exit 1
 
 # Metadata params
 ARG VERSION

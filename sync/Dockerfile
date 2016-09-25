@@ -5,13 +5,9 @@ MAINTAINER Vlad Ghinea vlad@ghn.me
 ENV AWS_DEFAULT_REGION=us-east-1
 
 # Install packages
-RUN apk --no-cache add \
-    bash=4.3.42-r3 \
-    git=2.8.3-r0 \
-    inotify-tools=3.14-r2 \
-    python=2.7.12-r0 && \
+RUN apk --no-cache add bash  git inotify-tools python && \
     apk --no-cache add --virtual build-dependencies py-pip && \
-    pip install awscli==1.10.65 && \
+    pip install awscli && \
     apk del build-dependencies
 
 # Configure entrypoint
