@@ -2,15 +2,15 @@ FROM ruby:2.3-alpine
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
-RUN apk --no-cache add bash git groff openssl python && \
-    apk --no-cache add --virtual build-dependencies py-pip && \
+RUN apk --no-cache add bash git groff openssl python curl
+
+# Install pip packages
+RUN apk --no-cache add --virtual build-dependencies py-pip && \
     pip install awscli && \
     apk del build-dependencies
 
-# Set working directory
-WORKDIR /app
-
 # Install gems
+WORKDIR /app
 COPY app/Gemfile /app/Gemfile
 RUN apk --no-cache add --virtual build-dependencies ruby-dev build-base && \
     bundle install --without development && \
@@ -21,7 +21,8 @@ ENV RACK_PORT=8523 \
     RACK_ENV=production \
     AWS_DEFAULT_REGION=us-east-1
 
-EXPOSE 8523
+# Expose ports
+EXPOSE ${RACK_PORT}
 
 # Copy application
 COPY app /app
@@ -34,7 +35,7 @@ ENTRYPOINT [ "sh", "-c", "bundle exec puma --environment $RACK_ENV --port $RACK_
 
 # Health
 HEALTHCHECK --interval=30s --timeout=30s --retries=10 CMD \
-  curl --silent --fail "http://localhost:$RACK_PORT/status" || exit 1
+  curl --silent --fail "http://localhost:${RACK_PORT}/status" || exit 1
 
 # Metadata params
 ARG VERSION

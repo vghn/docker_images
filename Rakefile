@@ -1,5 +1,3 @@
-require 'rspec/core/rake_task'
-
 require_relative 'lib/common'
 
 # VARs
@@ -12,6 +10,12 @@ BUILD_ARGS   = ENV['DOCKER_BUILD_ARGS']   || true
 BUILD_DATE = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
 IMAGES = Dir.glob('*').select do |dir|
   File.directory?(dir) && File.exist?("#{dir}/Dockerfile")
+end
+
+# RSpec
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:spec) do |task|
+  task.rspec_opts = "--format documentation --color"
 end
 
 # RuboCop
