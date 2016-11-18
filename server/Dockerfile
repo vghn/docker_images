@@ -4,7 +4,7 @@ MAINTAINER Vlad Ghinea vlad@ghn.me
 # Environment
 ENV PATH=/opt/puppetlabs/server/bin:/opt/puppetlabs/puppet/bin:/opt/puppetlabs/bin:/usr/local/bin:$PATH \
     PUPPETLABS_RELEASE='puppetlabs-release-pc1-xenial' \
-    PUPPET_SERVER_VERSION="2.6.0" \
+    PUPPET_SERVER_VERSION="2.7.0" \
     JAVA_ARGS="-Xms512m -Xmx512m" \
     AWS_DEFAULT_REGION='us-east-1'
 
