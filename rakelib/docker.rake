@@ -28,12 +28,12 @@ IMAGES.each do |image|
     desc 'Run Hadolint against the Dockerfile'
     task lint: :docker do
       info "Running Hadolint to check the style of #{docker_dir}/Dockerfile"
-      sh "docker run --rm -i lukasmartinelli/hadolint < #{docker_dir}/Dockerfile"
+      sh "docker run --rm -i lukasmartinelli/hadolint hadolint --ignore DL3008 --ignore DL3013 - < #{docker_dir}/Dockerfile"
     end
 
     desc 'Build docker image'
     task build: :docker do
-      cmd  = "cd #{docker_dir} && docker build"
+      cmd = "cd #{docker_dir} && docker build"
 
       if BUILD_ARGS
         cmd += " --build-arg VERSION=#{docker_tag}"
