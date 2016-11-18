@@ -34,7 +34,8 @@ deploy:
   provider: script
   script: if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
           bundle exec rake ${IMAGE}:push;
-          ssh ubuntu@puppet.ghn.me "/opt/vpm/bin/deploy ${IMAGE}";
+          cat docker-compose.yml | ssh ubuntu@puppet.ghn.me "docker-compose --project-name vpm --file - pull ${IMAGE}";
+          cat docker-compose.yml | ssh ubuntu@puppet.ghn.me "docker-compose --project-name vpm --file - up -d ${IMAGE}";
           fi;
           curl -X POST "$MICROBADGER_WEBHOOK"
   skip_cleanup: true
