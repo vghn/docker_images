@@ -23,7 +23,7 @@ end
 def download_vault
   if ENV['VAULT_S3PATH']
     log.info 'Download vault'
-    puts `aws s3 sync #{ENV['VAULT_S3PATH']} /etc/puppetlabs/vault/ --delete`
+    puts `aws s3 sync --delete --exact-timestamps #{ENV['VAULT_S3PATH']} /etc/puppetlabs/vault/`
     File.write('/var/local/deployed_vault', Time.now.localtime)
     log.info 'Vault downloaded'
   else
@@ -35,7 +35,7 @@ end
 def download_hieradata
   if ENV['HIERA_S3PATH']
     log.info 'Download Hiera data'
-    puts `aws s3 sync #{ENV['HIERA_S3PATH']} /etc/puppetlabs/hieradata/ --delete`
+    puts `aws s3 sync --delete --exact-timestamps #{ENV['HIERA_S3PATH']} /etc/puppetlabs/hieradata/`
     File.write('/var/local/deployed_hieradata', Time.now.localtime)
     log.info 'Hiera data downloaded'
   else
