@@ -1,7 +1,7 @@
 # Puppet Docker Images
-[![Build Status](https://travis-ci.org/vghn/puppet-docker.svg?branch=master)](https://travis-ci.org/vghn/puppet_docker)
+[![Build Status](https://travis-ci.org/vghn/docker_images.svg?branch=master)](https://travis-ci.org/vghn/docker_images)
 
-Docker Images for Vlad's Puppet Control Repo
+Vlad's Docker Images
 
 ## Development
 
