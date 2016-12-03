@@ -10,11 +10,11 @@ cache:
 env:
   global:
     - DOCKER_REPOSITORY=vladgh
-    - DOCKER_IMAGE_PREFIX=vpm-
   matrix:
-    - IMAGE=api MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-api/PBcHv5lkwKizG6tVusgUQtvx99c='
-    - IMAGE=server MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-server/q6ABG6ghDr0SoVFXAZ8V6Y0kqdA='
-    - IMAGE=sync MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-sync/2lhGgK0gfhuV-IBYhso7adDxJzA='
+    - IMAGE=minidlna MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/minidlna/Qr9rUtKpdDGoUVh3tGwGTBzSmQ8='
+    - IMAGE=vpm-api MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-api/PBcHv5lkwKizG6tVusgUQtvx99c='
+    - IMAGE=vpm-server MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-server/q6ABG6ghDr0SoVFXAZ8V6Y0kqdA='
+    - IMAGE=vpm-sync MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-sync/2lhGgK0gfhuV-IBYhso7adDxJzA='
 before_install:
   - sudo apt-get -qy update && sudo apt-get -qy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install docker-engine
   - docker --version
