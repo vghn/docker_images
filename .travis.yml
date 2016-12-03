@@ -1,15 +1,16 @@
 language: ruby
-rvm: 2.2
+rvm: 2.3.3
 services: docker
+branches:
+  except:
+  - "/^v\\d/"
 cache:
   directories:
     - vendor/bundle
-branches:
-  except:
-    - /^v\d/
 env:
   global:
     - DOCKER_REPOSITORY=vladgh
+    - DOCKER_IMAGE_PREFIX=vpm-
   matrix:
     - IMAGE=api MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-api/PBcHv5lkwKizG6tVusgUQtvx99c='
     - IMAGE=server MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-server/q6ABG6ghDr0SoVFXAZ8V6Y0kqdA='
@@ -23,19 +24,12 @@ script:
   - bundle exec rake ${IMAGE}:spec
 before_deploy:
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
-    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
-    echo "$DEPLOY_RSA" | base64 --decode --ignore-garbage > ~/.ssh/deploy_rsa;
-    chmod 600 ~/.ssh/deploy_rsa;
-    eval "$(ssh-agent -s)";
-    ssh-add ~/.ssh/deploy_rsa;
-    ssh-keyscan -H puppet.ghn.me >> ~/.ssh/known_hosts;
+      docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
     fi
 deploy:
   provider: script
   script: if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
-          bundle exec rake ${IMAGE}:push;
-          cat docker-compose.yml | ssh ubuntu@puppet.ghn.me "docker-compose --project-name vpm --file - pull ${IMAGE}";
-          cat docker-compose.yml | ssh ubuntu@puppet.ghn.me "docker-compose --project-name vpm --file - up -d ${IMAGE}";
+            bundle exec rake ${IMAGE}:push;
           fi;
           curl -X POST "$MICROBADGER_WEBHOOK"
   skip_cleanup: true
