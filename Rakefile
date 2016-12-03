@@ -2,7 +2,6 @@ require 'rainbow'
 
 # VARs
 REPOSITORY   = ENV['DOCKER_REPOSITORY']   || 'vladgh'
-IMAGE_PREFIX = ENV['DOCKER_IMAGE_PREFIX'] || ''
 NO_CACHE     = ENV['DOCKER_NO_CACHE']     || false
 BUILD_ARGS   = ENV['DOCKER_BUILD_ARGS']   || true
 
@@ -190,7 +189,7 @@ end
 
 IMAGES.each do |image|
   docker_dir       = File.basename(image)
-  docker_image     = "#{REPOSITORY}/#{IMAGE_PREFIX}#{docker_dir}"
+  docker_image     = "#{REPOSITORY}/#{docker_dir}"
   docker_tag       = version.to_s
   docker_tag_short = "#{version_hash[:major]}.#{version_hash[:minor]}.#{version_hash[:patch]}"
 
