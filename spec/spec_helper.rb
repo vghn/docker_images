@@ -1,17 +1,22 @@
 require 'serverspec'
 require 'docker'
 
-# VARs
-CURRENT_DIRECTORY = File.dirname(File.dirname(__FILE__))
-
 # Travis builds can take time
 Docker.options[:read_timeout] = 7200
 
 # Docker image context
 shared_context 'shared docker image' do
   before(:all) do
-    @image = Docker::Image.build_from_dir(CURRENT_DIRECTORY)
+    @image = Docker::Image.build_from_dir(DOCKER_IMAGE_DIRECTORY)
     set :backend, :docker
+  end
+end
+
+# Clean-up
+shared_context 'clean-up' do
+  after(:all) do
+    @container.kill
+    @container.delete(force: true)
   end
 end
 
@@ -26,14 +31,12 @@ shared_context 'with a docker container' do
     set :docker_container, @container.id
   end
 
-  after(:all) do
-    @container.kill
-    @container.delete(force: true)
-  end
+  include_context 'clean-up'
 end
 
 # Docker always running container
-shared_context 'with a perpetual docker container' do
+# Overwrite the entrypoint so that we only test the image.
+shared_context 'with a dummy docker container' do
   include_context 'shared docker image'
 
   before(:all) do
@@ -46,8 +49,5 @@ shared_context 'with a perpetual docker container' do
     set :docker_container, @container.id
   end
 
-  after(:all) do
-    @container.kill
-    @container.delete(force: true)
-  end
+  include_context 'clean-up'
 end
