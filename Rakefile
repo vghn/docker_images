@@ -226,13 +226,9 @@ IMAGES.each do |image|
       info "Tagging #{docker_image}:#{docker_tag_short}"
       sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:#{docker_tag_short}"
 
-      case git_branch
-      when 'master'
+      if git_branch == 'master'
         info "Tagging #{docker_image}:latest"
         sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:latest"
-      else
-        info "Tagging #{docker_image}:#{git_branch}"
-        sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:#{git_branch}"
       end
     end
 
@@ -244,13 +240,9 @@ IMAGES.each do |image|
       info "Pushing #{docker_image}:#{docker_tag_short} to Docker Hub"
       sh "docker push '#{docker_image}:#{docker_tag_short}'"
 
-      case git_branch
-      when 'master'
+      if git_branch == 'master'
         info "Pushing #{docker_image}:latest to Docker Hub"
         sh "docker push '#{docker_image}:latest'"
-      else
-        info "Pushing #{docker_image}:#{git_branch} to Docker Hub"
-        sh "docker push '#{docker_image}:#{git_branch}'"
       end
     end
   end

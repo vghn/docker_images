@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-CURRENT_DIRECTORY = File.dirname(File.dirname(__FILE__))
+DOCKER_IMAGE_DIRECTORY = File.dirname(File.dirname(__FILE__))
 
 describe 'Dockerfile' do
   include_context 'with a docker container'
