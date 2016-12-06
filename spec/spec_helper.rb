@@ -1,6 +1,13 @@
 require 'serverspec'
 require 'docker'
 
+# Configura RSpec
+RSpec.configure do |config|
+  config.formatter = :documentation
+  config.color = true
+  config.tty = true
+end
+
 # Travis builds can take time
 Docker.options[:read_timeout] = 7200
 

@@ -1,4 +1,5 @@
-require 'rainbow'
+# Configure the load path so all dependencies in your Gemfile can be required
+require 'bundler/setup'
 
 # VARs
 REPOSITORY   = ENV['DOCKER_REPOSITORY']   || 'vladgh'
@@ -10,6 +11,8 @@ BUILD_DATE = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
 IMAGES = Dir.glob('*').select do |dir|
   File.directory?(dir) && File.exist?("#{dir}/Dockerfile")
 end
+
+require 'rainbow'
 
 def info(message)
   puts Rainbow("==> #{message}").green
@@ -47,7 +50,7 @@ def git_url
 end
 
 # Get the CI Status (needs https://hub.github.com/)
-def ci_status(branch = 'master')
+def git_ci_status(branch = 'master')
   `hub ci-status #{branch}`.strip
 end
 
@@ -96,11 +99,8 @@ def configure_changelog(config, release: nil)
   config.future_release     = "v#{release}" if release
 end
 
-# RSpec
+# RSpec tasks
 require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new(:spec) do |task|
-  task.rspec_opts = '--format documentation --color'
-end
 
 # RuboCop
 require 'rubocop/rake_task'
@@ -124,9 +124,16 @@ RubyCritic::RakeTask.new do |task|
 end
 
 # GitHub CHANGELOG generator
-require 'github_changelog_generator/task'
-GitHubChangelogGenerator::RakeTask.new(:unreleased) do |config|
-  configure_changelog(config)
+# Might not be always present, for example with
+# `bundle install --without development`
+begin
+  # GitHub CHANGELOG generator
+  require 'github_changelog_generator/task'
+  GitHubChangelogGenerator::RakeTask.new(:unreleased) do |config|
+    configure_changelog(config)
+  end
+rescue LoadError
+  warn 'github_changelog_generator gem is not installed'
 end
 
 # Release task
@@ -158,7 +165,7 @@ namespace :release do
 
       # Waiting for CI to finish
       puts 'Waiting for CI to finish'
-      sleep 5 until ci_status(release_branch) == 'success'
+      sleep 5 until git_ci_status(release_branch) == 'success'
 
       # Merge release branch
       sh "git checkout #{initial_branch}"
@@ -268,13 +275,19 @@ task test: [
   :spec
 ]
 
-# List all tasks by default
-task :default do
-  puts `rake -T`
-end
-
 # Version
 desc 'Display version'
 task :version do
   puts "Current version: #{version}"
+end
+
+# Create a list of contributors from GitHub
+desc 'Populate CONTRIBUTORS file'
+task :contributors do
+  system("git log --format='%aN' | sort -u > CONTRIBUTORS")
+end
+
+# List all tasks by default
+task :default do
+  puts `rake -T`
 end
