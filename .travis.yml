@@ -11,12 +11,8 @@ env:
   global:
     - DOCKER_REPOSITORY=vladgh
   matrix:
-    - IMAGE=backup MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/backup/ZjbRHMtrAhl9V2MWjWmOR0KWlGc='
-    - IMAGE=deluge MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/deluge/BvOV7ec7tt2N207sgMKqFrGzSxs='
-    - IMAGE=minidlna MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/minidlna/Qr9rUtKpdDGoUVh3tGwGTBzSmQ8='
     - IMAGE=vpm-api MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-api/PBcHv5lkwKizG6tVusgUQtvx99c='
     - IMAGE=vpm-server MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-server/q6ABG6ghDr0SoVFXAZ8V6Y0kqdA='
-    - IMAGE=vpm-sync MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/vpm-sync/2lhGgK0gfhuV-IBYhso7adDxJzA='
 before_install:
   - sudo apt-get -qy update && sudo apt-get -qy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install docker-engine
   - docker --version
