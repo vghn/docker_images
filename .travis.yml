@@ -21,11 +21,11 @@ before_install:
     fi
 install: bundle install --path vendor/bundle
 script:
-  - bundle exec rake ${IMAGE}:build
-  - bundle exec rake ${IMAGE}:spec
+  - bundle exec rake docker:${IMAGE}:build
+  - bundle exec rake docker:${IMAGE}:spec
 after_success:
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
-      bundle exec rake ${IMAGE}:push;
+      bundle exec rake docker:${IMAGE}:push;
     fi;
     curl -X POST "$MICROBADGER_WEBHOOK"
 notifications:
