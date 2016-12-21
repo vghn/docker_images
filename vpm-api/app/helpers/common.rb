@@ -19,15 +19,15 @@ def config
   end
 end
 
-# Download vault
-def download_vault
-  if ENV['VAULT_S3PATH']
-    log.info 'Download vault'
-    puts `aws s3 sync --delete --exact-timestamps #{ENV['VAULT_S3PATH']} /etc/puppetlabs/vault/`
-    File.write('/var/local/deployed_vault', Time.now.localtime)
-    log.info 'Vault downloaded'
+# Download secure files
+def download_secure_files
+  if ENV['SECURE_S3PATH']
+    log.info 'Download secure files'
+    puts `aws s3 sync --delete --exact-timestamps #{ENV['SECURE_S3PATH']} /etc/puppetlabs/secure/`
+    File.write('/var/local/deployed_secure_files', Time.now.localtime)
+    log.info 'Secure files downloaded'
   else
-    log.warn 'Skip downloading vault because VAULT_S3PATH is not set!'
+    log.warn 'Skip downloading secure files because SECURE_S3PATH is not set!'
   end
 end
 
@@ -54,7 +54,7 @@ end
 # Deployment
 def deploy
   log.info 'Deployment will start in the background'
-  Thread.new { download_vault }
+  Thread.new { download_secure_files }
   Thread.new { download_hieradata }
   Thread.new { deploy_r10k }
 end
