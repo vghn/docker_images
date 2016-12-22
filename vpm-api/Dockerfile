@@ -2,7 +2,7 @@ FROM ruby:2.3-alpine
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
-RUN apk --no-cache add bash git groff openssl python curl
+RUN apk --no-cache add bash curl findutils git groff openssl python
 
 # Install pip packages
 RUN apk --no-cache add --virtual build-dependencies py-pip && \

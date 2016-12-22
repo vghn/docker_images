@@ -9,6 +9,15 @@ describe 'Dockerfile' do
     expect(os[:family]).to eq('alpine')
   end
 
+  describe package('findutils') do
+    it { is_expected.to be_installed }
+  end
+
+  describe command('find --version') do
+    its(:stdout) { is_expected.to contain('(GNU findutils)') }
+    its(:exit_status) { is_expected.to eq 0 }
+  end
+
   describe package('git') do
     it { is_expected.to be_installed }
   end
