@@ -29,7 +29,5 @@ after_success:
     fi;
     curl -X POST "$MICROBADGER_WEBHOOK"
 notifications:
-  webhooks:
-    urls: https://puppet.ghn.me/travis
   slack:
     secure: "n4zlSRILuHPorcEezRGHIMriCzjzspNpjgcJj7j3s9NElQAISOHUjw2NKGEH/Rpo3odQe3TFuxAz+th9om/LuONAyApR+Ph4gzMLfoEl+i5ORQx0Q+679o08RrY+fqIUCX+m5BjAElagPgQ+MCnEXqL5+IiLen7cPmJuY6nyQS15eVMDYdnt0e5NDyYSDQyVOMK1ErwdsiBsIMqVy7cqlCB9Bd+OgzmAua+IVepr7IKLg2N4IuXEvzfx17y7ZKnUtSelzU6muULMhwiizhdLPBSn0cGNbFBzqnnm+oxfy2JwTc871uOTP8u1eMi/CCzaZjtYyfoYMT+rwUoFDzwJw0Mp6zXkwQdURQh/pmJGgXkDyxuN8ZKPh4G2JvwW02D+15ZqyNdLtQJM1PvpJpj3bNy/+A1xugJ8KdrSb3m2OpRdqbfAgi7086dqpOV/HMJYzsH0zeLFaLDF8WvKjjsmLil41oYhIxKxOXfHBHRJfcqnYCN97bxuqk9fFBE2tZwA9Im4xlAAmc748LYWnNgs1CvyBMOjNJN/RRuDkcLhWsgcpbR1ByteBX0YiOZ7z26MFuHl++Coq81iW2WZHl5Ra+t6kdshFHTJxv0aM67y9jidAq1q0Q6idEj/JEqOazLXuqhedLGPwa9Knd48H/8WNwU3x9V1BS0a2JAFpygnHug="

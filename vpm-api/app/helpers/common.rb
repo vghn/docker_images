@@ -12,10 +12,10 @@ end
 
 # Configuration
 def config
-  if File.exist?(ENV['DATA_CONFIG'])
-    YAML.load_file(ENV['DATA_CONFIG'])
+  if File.exist?(ENV['API_CONFIG'])
+    YAML.load_file(ENV['API_CONFIG'])
   else
-    raise "Configuration file '#{ENV['DATA_CONFIG']}' does not exist"
+    raise "Configuration file '#{ENV['API_CONFIG']}' does not exist"
   end
 end
 
@@ -23,7 +23,7 @@ end
 def download_secure_files
   if ENV['SECURE_S3PATH']
     log.info 'Download secure files'
-    puts `aws s3 sync --delete --exact-timestamps #{ENV['SECURE_S3PATH']} /etc/puppetlabs/secure/`
+    puts `aws s3 sync --delete --exact-timestamps #{ENV['SECURE_S3PATH']}/ /etc/puppetlabs/secure/ && find /etc/puppetlabs/secure/ -type d -empty -delete`
     File.write('/var/local/deployed_secure_files', Time.now.localtime)
     log.info 'Secure files downloaded'
   else
@@ -35,7 +35,7 @@ end
 def download_hieradata
   if ENV['HIERA_S3PATH']
     log.info 'Download Hiera data'
-    puts `aws s3 sync --delete --exact-timestamps #{ENV['HIERA_S3PATH']} /etc/puppetlabs/hieradata/`
+    puts `aws s3 sync --delete --exact-timestamps #{ENV['HIERA_S3PATH']}/ /etc/puppetlabs/hieradata/ && find /etc/puppetlabs/hieradata/ -type d -empty -delete`
     File.write('/var/local/deployed_hieradata', Time.now.localtime)
     log.info 'Hiera data downloaded'
   else
