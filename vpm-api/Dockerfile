@@ -6,7 +6,7 @@ RUN apk --no-cache add bash curl findutils git groff openssl python2
 
 # Install pip packages
 RUN apk --no-cache add --virtual build-dependencies py2-pip && \
-    pip install awscli && \
+    pip --no-cache-dir install awscli && \
     apk del build-dependencies
 
 # Install gems
