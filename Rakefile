@@ -231,9 +231,13 @@ RubyCritic::RakeTask.new do |task|
   task.paths = lint_files_list
 end
 
-require 'github_changelog_generator/task'
-GitHubChangelogGenerator::RakeTask.new(:unreleased) do |config|
-  changelog(config)
+begin
+  require 'github_changelog_generator/task'
+  GitHubChangelogGenerator::RakeTask.new(:unreleased) do |config|
+    changelog(config)
+  end
+rescue LoadError
+  nil # Might be in a group that is not installed
 end
 
 namespace :release do
@@ -243,7 +247,7 @@ namespace :release do
       new_version = version_bump(level)
       release = "#{new_version[:major]}.#{new_version[:minor]}.#{new_version[:patch]}"
       release_branch = "release_v#{release.gsub(/[^0-9A-Za-z]/, '_')}"
-      initial_branch = branch
+      initial_branch = git_branch
 
       # Check if the repo is clean
       git_clean_repo
