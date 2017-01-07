@@ -36,10 +36,6 @@ describe 'Dockerfile' do
     its(:exit_status) { is_expected.to eq 0 }
   end
 
-  describe file('/etc/puppetlabs/r10k/r10k.yaml') do
-    it { is_expected.to exist }
-  end
-
   describe command('aws --version') do
     its(:stderr) { is_expected.to contain('aws-cli') }
     its(:exit_status) { is_expected.to eq 0 }
