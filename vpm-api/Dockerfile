@@ -10,10 +10,9 @@ RUN apk --no-cache add --virtual build-dependencies py-pip && \
     apk del build-dependencies
 
 # Install gems
-WORKDIR /app
 COPY app/Gemfile /app/Gemfile
 RUN apk --no-cache add --virtual build-dependencies ruby-dev build-base && \
-    bundle install --without development && \
+    cd /app && bundle install --without development && \
     apk del build-dependencies
 
 # Environment
@@ -27,10 +26,8 @@ EXPOSE ${RACK_PORT}
 # Copy application
 COPY app /app
 
-# Copy config files
-COPY r10k.yaml /etc/puppetlabs/r10k/r10k.yaml
-
 # Start server
+WORKDIR /app
 ENTRYPOINT [ "sh", "-c", "bundle exec puma --environment $RACK_ENV --port $RACK_PORT"]
 
 # Health
