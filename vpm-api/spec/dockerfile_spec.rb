@@ -9,6 +9,10 @@ describe 'Dockerfile' do
     expect(os[:family]).to eq('alpine')
   end
 
+  describe package('curl') do
+    it { is_expected.to be_installed }
+  end
+
   describe package('findutils') do
     it { is_expected.to be_installed }
   end
@@ -27,17 +31,9 @@ describe 'Dockerfile' do
     its(:exit_status) { is_expected.to eq 0 }
   end
 
-  describe package('r10k') do
-    it { is_expected.to be_installed.by('gem') }
-  end
-
-  describe command('r10k version') do
-    its(:stdout) { is_expected.to contain('r10k') }
-    its(:exit_status) { is_expected.to eq 0 }
-  end
-
-  describe command('aws --version') do
-    its(:stderr) { is_expected.to contain('aws-cli') }
-    its(:exit_status) { is_expected.to eq 0 }
+  ['faraday', 'json', 'puma', 'r10k', 'sinatra'].each do |gem|
+    describe package(gem) do
+      it { is_expected.to be_installed.by('gem') }
+    end
   end
 end
