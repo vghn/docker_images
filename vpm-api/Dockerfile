@@ -1,13 +1,8 @@
-FROM ruby:2.4-alpine
+FROM vladgh/awscliruby:latest
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
-RUN apk --no-cache add bash curl findutils git groff openssl python
-
-# Install pip packages
-RUN apk --no-cache add --virtual build-dependencies py-pip && \
-    pip --no-cache-dir install awscli && \
-    apk del build-dependencies
+RUN apk --no-cache add curl findutils git openssl
 
 # Install gems
 COPY app/Gemfile /app/Gemfile
@@ -17,8 +12,7 @@ RUN apk --no-cache add --virtual build-dependencies ruby-dev build-base && \
 
 # Environment
 ENV RACK_PORT=8523 \
-    RACK_ENV=production \
-    AWS_DEFAULT_REGION=us-east-1
+    RACK_ENV=production
 
 # Expose ports
 EXPOSE ${RACK_PORT}

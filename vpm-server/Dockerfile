@@ -1,4 +1,4 @@
-FROM vladgh/puppetserver:stable
+FROM vladgh/puppetserver:latest
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Environment
