@@ -1,8 +1,7 @@
 ENV['RACK_ENV'] = 'test'
 
-require_relative '../app'
 def app
-  Rack::Builder.parse_file('config.ru').first
+  @app ||= Rack::Builder.parse_file('config.ru').first
 end
 
 require 'rack/test'

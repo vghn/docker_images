@@ -1,3 +1,9 @@
+# Configure the load path so all dependencies in your Gemfile can be required
+require 'bundler/setup'
+
+# Add libraries to the load path
+$LOAD_PATH.unshift(File.dirname(__FILE__))
+
 # RSpec
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new
@@ -6,7 +12,7 @@ RSpec::Core::RakeTask.new
 require 'rubocop/rake_task'
 desc 'Run RuboCop on the tasks and lib directory'
 RuboCop::RakeTask.new(:rubocop) do |task|
-  task.options  = ['--display-cop-names', '--extra-details']
+  task.options = ['--display-cop-names', '--extra-details']
 end
 
 # Reek
@@ -19,6 +25,9 @@ end
 # Ruby Critic
 require 'rubycritic/rake_task'
 RubyCritic::RakeTask.new
+
+desc 'Run tests'
+task test: [:spec]
 
 # List all tasks by default
 Rake::Task[:default].clear if Rake::Task.task_defined?(:default)

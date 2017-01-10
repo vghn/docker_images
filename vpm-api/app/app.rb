@@ -1,5 +1,8 @@
 require 'sinatra'
 
+# Add libraries to the load path
+$LOAD_PATH.unshift(File.dirname(__FILE__))
+
 # Sinatra Application Class
 class API < Sinatra::Application
   # VARs
@@ -7,10 +10,11 @@ class API < Sinatra::Application
   set :secure_s3path, ENV['SECURE_S3PATH']
   set :hiera_s3path, ENV['HIERA_S3PATH']
   set :control_repo, ENV['CONTROL_REPO']
+  set :r10k_config_file, '/etc/puppetlabs/r10k/r10k.yaml'
 
   # Add helpers
-  require 'app_helpers'
-  extend APPHelpers
+  require 'helpers'
+  extend Helpers
 
   # Flush output immediately
   $stdout.sync = true
@@ -92,7 +96,7 @@ class API < Sinatra::Application
       ENV.to_h.to_json
     else
       'Environment (as <a href="/env?json=yes">JSON</a>):<ul>' +
-        ENV.each.map { |k, v| "<li><b>#{k}:</b> #{v}</li>" }.join + '</ul>'
+        ENV.each.map { |key, value| "<li><b>#{key}:</b> #{value}</li>" }.join + '</ul>'
     end
   end
 

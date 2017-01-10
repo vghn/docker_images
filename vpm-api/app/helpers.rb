@@ -1,14 +1,15 @@
-require 'base64'
-require 'erb'
 require 'faraday'
-require 'fileutils'
 require 'json'
 require 'logger'
 require 'openssl'
 require 'yaml'
 
 # Helper methods
-module APPHelpers
+module Helpers
+  # Require the other modules
+  require 'r10k'
+  include R10K
+
   # Logging
   def logger
     @logger ||= Logger.new(STDOUT)
@@ -23,7 +24,10 @@ module APPHelpers
   def initial_deployment
     logger.info 'Start initial deployment'
     deploy
+    configure_api
+  end
 
+  def configure_api
     if config_file
       logger.info 'Wait for the configuration'
       sleep 1 until File.exist?(config_file)
@@ -57,68 +61,40 @@ module APPHelpers
     end
   end
 
-  # R10K configuration template
-  def r10k_template
-    <<-EOT
-cachedir: '/opt/puppetlabs/r10k/cache'
-sources:
-  operations:
-    remote: '<%= control_repo %>'
-    basedir: '/etc/puppetlabs/code/environments'
-    EOT
+  # Deployment
+  def deploy
+    deploy_secure_files_thread
+    deploy_hieradata_thread
+    deploy_r10k_thread
   end
 
-  # R10K configuration
-  def r10k_config
-    r10k_config ||= ERB.new(r10k_template).result(binding)
+  # Deploy secure files
+  def deploy_secure_files_thread
+    Thread.new { download_secure_files }
   end
 
-  # Generate R10K configuration
-  def write_r10k_config
-    logger.info 'Generate R10K configuration'
-    FileUtils.mkdir_p('/etc/puppetlabs/r10k')
-    File.write('/etc/puppetlabs/r10k/r10k.yaml', r10k_config)
-    logger.info 'R10K configuration created'
-  end
-
-  # Deploy R10K
-  def deploy_r10k
-    if control_repo
-      if File.exist?('/etc/puppetlabs/r10k/r10k.yaml') && \
-         File.read('/etc/puppetlabs/r10k/r10k.yaml') == r10k_config
-        logger.info 'R10K configuration has not changed'
-      else
-        write_r10k_config
-      end
-      logger.info 'Deploy R10K'
-      logger.debug `r10k deploy environment --puppetfile`
-      File.write('/var/local/deployed_r10k', Time.now.localtime)
-      logger.info 'R10K deployed'
-    else
-      logger.warn 'Skip R10K deployment because CONTROL_REPO is not set!'
-    end
+  # Deploy Hiera data
+  def deploy_hieradata_thread
+    Thread.new { download_hieradata }
   end
 
   # Deployment
-  def deploy
-    Thread.new { download_secure_files }
-    Thread.new { download_hieradata }
+  def deploy_r10k_thread
     Thread.new { deploy_r10k }
   end
 
   # Only allow authorized requests
   def protected!
-    unless authorized?
-      response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
-      return halt 401, 'Not authorized'
-    end
+    return if authorized?
+    response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+    halt 401, 'Not authorized'
   end
 
   # Check credentials
   def authorized?
     @auth ||= Rack::Auth::Basic::Request.new(request.env)
-    @auth.provided? && @auth.basic? && @auth.credentials &&
-      @auth.credentials == [config['user'], config['pass']]
+    credentials = @auth.credentials
+    @auth.provided? && @auth.basic? && credentials && credentials == [config['user'], config['pass']]
   end
 
   # Verify GitHub signature
@@ -137,10 +113,10 @@ sources:
 
   # Get Travis public key
   def travis_public_key
-    conn = Faraday.new(url: 'https://api.travis-ci.org') do |faraday|
+    @conn = Faraday.new(url: 'https://api.travis-ci.org') do |faraday|
       faraday.adapter Faraday.default_adapter
     end
-    response = conn.get '/config'
+    response = @conn.get '/config'
     JSON.parse(response.body)['config']['notifications']['webhook']['public_key']
   end
 end # module APPHelpers
