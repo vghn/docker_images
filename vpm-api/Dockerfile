@@ -1,13 +1,31 @@
-FROM vladgh/awscliruby:latest
+FROM ruby:2.4-alpine
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
-RUN apk --no-cache add curl findutils git openssl
+RUN apk --no-cache add ca-certificates curl findutils git groff less openssl python
+
+# https://github.com/docker-library/docker/blob/master/1.12/Dockerfile
+ENV DOCKER_BUCKET get.docker.com
+ENV DOCKER_VERSION 1.12.5
+ENV DOCKER_SHA256 0058867ac46a1eba283e2441b1bb5455df846144f9d9ba079e97655399d4a2c6
+RUN set -x \
+    && curl -fSL "https://${DOCKER_BUCKET}/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
+    && echo "${DOCKER_SHA256} *docker.tgz" | sha256sum -c - \
+    && tar -xzvf docker.tgz \
+    && mv docker/* /usr/local/bin/ \
+    && rmdir docker \
+    && rm docker.tgz \
+    && docker -v
 
 # Install gems
 COPY app/Gemfile /app/Gemfile
 RUN apk --no-cache add --virtual build-dependencies ruby-dev build-base && \
     cd /app && bundle install --without development && \
+    apk del build-dependencies
+
+# Install pip packages
+RUN apk --no-cache add --virtual build-dependencies py-pip && \
+    pip --no-cache-dir install awscli && \
     apk del build-dependencies
 
 # Environment
