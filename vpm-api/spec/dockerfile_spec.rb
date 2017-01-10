@@ -3,18 +3,33 @@ require 'spec_helper'
 DOCKER_IMAGE_DIRECTORY = File.dirname(File.dirname(__FILE__))
 
 describe 'Dockerfile' do
-  include_context 'with a dummy docker container'
+  include_context 'with a docker container (override entrypoint)'
 
   it 'uses the correct OS' do
     expect(os[:family]).to eq('alpine')
   end
 
-  describe package('curl') do
-    it { is_expected.to be_installed }
+  packages = %w(ca-certificates curl findutils git groff less openssl python)
+  packages.each do |pkg|
+    describe package(pkg) do
+      it { is_expected.to be_installed }
+    end
   end
 
-  describe package('findutils') do
-    it { is_expected.to be_installed }
+  gems = %w(faraday json puma r10k sinatra)
+  gems.each do |pkg|
+    describe package(pkg) do
+      it { is_expected.to be_installed.by('gem') }
+    end
+  end
+
+  describe command('aws --version') do
+    its(:stderr) { is_expected.to contain('aws-cli') }
+    its(:exit_status) { is_expected.to eq 0 }
+  end
+
+  describe command('docker --version') do
+    its(:exit_status) { is_expected.to eq 0 }
   end
 
   describe command('find --version') do
@@ -22,18 +37,8 @@ describe 'Dockerfile' do
     its(:exit_status) { is_expected.to eq 0 }
   end
 
-  describe package('git') do
-    it { is_expected.to be_installed }
-  end
-
   describe command('git version') do
     its(:stdout) { is_expected.to contain('git') }
     its(:exit_status) { is_expected.to eq 0 }
-  end
-
-  ['faraday', 'json', 'puma', 'r10k', 'sinatra'].each do |gem|
-    describe package(gem) do
-      it { is_expected.to be_installed.by('gem') }
-    end
   end
 end
