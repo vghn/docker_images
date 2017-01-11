@@ -4,6 +4,7 @@ gem 'faraday', require: false
 gem 'json', require: false
 gem 'puma', require: false
 gem 'r10k', require: false
+gem 'rack', require: false
 gem 'sinatra', require: false
 
 group :development do

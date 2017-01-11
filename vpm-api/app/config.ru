@@ -1,6 +1,6 @@
 # Add libraries to the load path
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
-# Run app
+# Run classic app
 require 'app'
-run API
+run Sinatra::Application
