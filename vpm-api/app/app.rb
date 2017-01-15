@@ -97,11 +97,11 @@ cachedir: '/opt/puppetlabs/r10k/cache'
 
 # A list of git repositories to create
 sources:
-# This will clone the git repository and instantiate an environment per
-# branch in /etc/puppetlabs/code/environments
-main:
-  remote: '<%= CONTROL_REPO %>'
-  basedir: '/etc/puppetlabs/code/environments'
+  # This will clone the git repository and instantiate an environment per
+  # branch in /etc/puppetlabs/code/environments
+  main:
+    remote: '<%= CONTROL_REPO %>'
+    basedir: '/etc/puppetlabs/code/environments'
   EOT
 end
 
