@@ -1,8 +1,8 @@
-FROM ruby:2.4-alpine
+FROM ruby:2.3-alpine
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
-RUN apk --no-cache add ca-certificates curl findutils git groff less openssl python
+RUN apk --no-cache add ca-certificates curl openssl
 
 # https://github.com/docker-library/docker/blob/master/1.12/Dockerfile
 ENV DOCKER_BUCKET get.docker.com
@@ -21,11 +21,6 @@ RUN set -x \
 COPY app/Gemfile /app/Gemfile
 RUN apk --no-cache add --virtual build-dependencies ruby-dev build-base && \
     cd /app && bundle install --without development && \
-    apk del build-dependencies
-
-# Install pip packages
-RUN apk --no-cache add --virtual build-dependencies py-pip && \
-    pip --no-cache-dir install awscli && \
     apk del build-dependencies
 
 # Environment

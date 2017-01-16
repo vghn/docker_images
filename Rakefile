@@ -138,8 +138,10 @@ namespace :docker do
   docker_images.each do |image|
     docker_dir       = File.basename(image)
     docker_image     = "#{DOCKER_REPOSITORY}/#{docker_dir}"
-    docker_tag       = VERSION.to_s
-    docker_tag_short = "#{version_hash[:major]}.#{version_hash[:minor]}.#{version_hash[:patch]}"
+    docker_tag_full  = VERSION.to_s
+    docker_tag_long  = "#{version_hash[:major]}.#{version_hash[:minor]}.#{version_hash[:patch]}"
+    docker_tag_minor = "#{version_hash[:major]}.#{version_hash[:minor]}"
+    docker_tag_major = "#{version_hash[:major]}"
 
     namespace docker_dir.to_sym do |_args|
       RSpec::Core::RakeTask.new(spec: [:docker]) do |task|
@@ -157,7 +159,7 @@ namespace :docker do
         cmd = "cd #{docker_dir} && docker build"
 
         if DOCKER_BUILD_ARGS
-          cmd += " --build-arg VERSION=#{docker_tag}"
+          cmd += " --build-arg VERSION=#{docker_tag_full}"
           cmd += " --build-arg VCS_URL=#{git_url}"
           cmd += " --build-arg VCS_REF=#{git_commit}"
           cmd += " --build-arg BUILD_DATE=#{DOCKER_BUILD_DATE}"
@@ -168,25 +170,40 @@ namespace :docker do
           cmd += ' --no-cache'
         end
 
-        info "Building #{docker_image}:#{docker_tag}"
-        sh "#{cmd} -t #{docker_image}:#{docker_tag} ."
+        info "Building #{docker_image}:#{docker_tag_full}"
+        sh "#{cmd} -t #{docker_image}:#{docker_tag_full} ."
 
-        info "Tagging #{docker_image}:#{docker_tag_short}"
-        sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:#{docker_tag_short}"
+        info "Tagging #{docker_image}:#{docker_tag_long} image"
+        sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
+          #{docker_image}:#{docker_tag_long}"
 
-        if git_branch == 'master'
+        info "Tagging #{docker_image}:#{docker_tag_minor} image"
+        sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
+          #{docker_image}:#{docker_tag_minor}"
+
+        info "Tagging #{docker_image}:#{docker_tag_major} image"
+        sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
+          #{docker_image}:#{docker_tag_major}"
+
+        if git_branch == 'master' && ENV['TRAVIS_PULL_REQUEST'] == false
           info "Tagging #{docker_image}:latest"
-          sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag} #{docker_image}:latest"
+          sh "cd #{docker_dir} && docker tag #{docker_image}:latest"
         end
       end # task build
 
       desc 'Publish docker image'
       task push: :docker do
-        info "Pushing #{docker_image}:#{docker_tag} to Docker Hub"
-        sh "docker push '#{docker_image}:#{docker_tag}'"
+        info "Pushing #{docker_image}:#{docker_tag_full} to Docker Hub"
+        sh "docker push #{docker_image}:#{docker_tag_full}"
 
-        info "Pushing #{docker_image}:#{docker_tag_short} to Docker Hub"
-        sh "docker push '#{docker_image}:#{docker_tag_short}'"
+        info "Pushing #{docker_image}:#{docker_tag_long} to Docker Hub"
+        sh "docker push #{docker_image}:#{docker_tag_long}"
+
+        info "Pushing #{docker_image}:#{docker_tag_minor} to Docker Hub"
+        sh "docker push #{docker_image}:#{docker_tag_minor}"
+
+        info "Pushing #{docker_image}:#{docker_tag_major} to Docker Hub"
+        sh "docker push #{docker_image}:#{docker_tag_major}"
 
         if git_branch == 'master'
           info "Pushing #{docker_image}:latest to Docker Hub"
