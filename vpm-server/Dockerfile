@@ -4,7 +4,7 @@ MAINTAINER Vlad Ghinea vlad@ghn.me
 # Environment
 ENV AWS_DEFAULT_REGION='us-east-1'
 
-# Install packages
+# Install AWS SDK
 RUN gem install aws-sdk --no-ri --no-rdoc
 
 # Copy config files

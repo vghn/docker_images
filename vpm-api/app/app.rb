@@ -11,10 +11,10 @@ require 'yaml'
 
 # VARs
 CONFIG_FILE   = ENV['API_CONFIG']
+DATA_SERVICE  = ENV['DATA_SERVICE']
 SECURE_S3PATH = ENV['SECURE_S3PATH']
 HIERA_S3PATH  = ENV['HIERA_S3PATH']
 CONTROL_REPO  = ENV['CONTROL_REPO']
-R10K_CFG_FILE = '/etc/puppetlabs/r10k/r10k.yaml'.freeze
 
 # Logging
 def logger
@@ -26,14 +26,8 @@ def config
   @config ||= YAML.load_file(CONFIG_FILE)
 end
 
-# Intitial deployment
-def initial_deployment
-  logger.info 'Start initial deployment'
-  deploy
-  configure_api
-end
-
-def configure_api
+# Wait for the configuration
+def wait_for_config
   if CONFIG_FILE
     logger.info 'Wait for the configuration'
     sleep 1 until File.exist?(CONFIG_FILE)
@@ -41,6 +35,31 @@ def configure_api
   else
     logger.warn 'Skip configuration because API_CONFIG is not set!'
   end
+end
+
+# Get the data container ID
+def data_container_id
+  data_service_name = ENV['DATA_SERVICE'] || 'data'
+
+  @data_container_id ||= `docker ps --latest --all --filter \
+    "label=com.docker.compose.service=#{data_service_name}" \
+    --format "{{.ID}}"`.chomp
+end
+
+# Compose the volume arguments for the Docker command
+def docker_cmd
+  @docker_cmd = 'docker run --rm'
+  if data_container_id != ''
+    @docker_cmd += " --volumes-from #{data_container_id}"
+  end
+  return @docker_cmd
+end
+
+# Initial deployment
+def initial_deployment
+  logger.info 'Start initial deployment'
+  deploy
+  wait_for_config
 end
 
 # Deployment
@@ -52,98 +71,72 @@ end
 
 # Deploy secure files
 def deploy_secure_files_thread
-  Thread.new { download_secure_files }
-end
-
-# Deploy Hiera data
-def deploy_hieradata_thread
-  Thread.new { download_hieradata }
-end
-
-# Deployment
-def deploy_r10k_thread
-  Thread.new { deploy_r10k }
-end
-
-# Download secure files
-def download_secure_files
   if SECURE_S3PATH
-    logger.info 'Download secure files'
-    logger.debug `aws s3 sync --delete --exact-timestamps #{SECURE_S3PATH}/ /etc/puppetlabs/secure/ && find /etc/puppetlabs/secure/ -type d -empty -delete`
-    File.write('/var/local/deployed_secure_files', Time.now.localtime)
-    logger.info 'Secure files downloaded'
+    Thread.new { download_secure_files }
   else
     logger.warn 'Skip downloading secure files because SECURE_S3PATH is not set!'
   end
 end
 
-# Download Hiera data
-def download_hieradata
+# Deploy Hiera data
+def deploy_hieradata_thread
   if HIERA_S3PATH
-    logger.info 'Download Hiera data'
-    logger.debug `aws s3 sync --delete --exact-timestamps #{HIERA_S3PATH}/ /etc/puppetlabs/hieradata/ && find /etc/puppetlabs/hieradata/ -type d -empty -delete`
-    File.write('/var/local/deployed_hieradata', Time.now.localtime)
-    logger.info 'Hiera data downloaded'
+    Thread.new { download_hieradata }
   else
     logger.warn 'Skip downloading hiera data because HIERA_S3PATH is not set!'
   end
 end
 
-# R10K configuration template
-def r10k_template
-  <<-EOT
-# The location to use for storing cached Git repos
-cachedir: '/opt/puppetlabs/r10k/cache'
-
-# A list of git repositories to create
-sources:
-  # This will clone the git repository and instantiate an environment per
-  # branch in /etc/puppetlabs/code/environments
-  main:
-    remote: '<%= CONTROL_REPO %>'
-    basedir: '/etc/puppetlabs/code/environments'
-  EOT
-end
-
-# R10K configuration
-def r10k_config
-  @r10k_config ||= ERB.new(r10k_template).result(binding)
-end
-
-# Generate R10K configuration
-def write_r10k_config
-  logger.info 'Generate R10K configuration'
-  FileUtils.mkdir_p(File.dirname(R10K_CFG_FILE))
-  File.write(R10K_CFG_FILE, r10k_config)
-  logger.info 'R10K configuration created'
-end
-
-# Check R10K configuration
-def check_r10k_config
-  if File.exist?(R10K_CFG_FILE) && \
-     File.read(R10K_CFG_FILE) == r10k_config
-    logger.info 'R10K configuration has not changed'
-  else
-    write_r10k_config
-  end
-end
-
-# Check R10K deployment
-def deploy_r10k
+# Deployment
+def deploy_r10k_thread
   if CONTROL_REPO
-    check_r10k_config
-    run_r10k_deploy
+    Thread.new { deploy_r10k }
   else
     logger.warn 'Skip R10K deployment because CONTROL_REPO is not set!'
   end
 end
 
+# Download secure files
+# '--volumes-from' is needed here because docker in docker does not work with
+# volumes mounted from the host
+def download_secure_files
+  logger.info 'Download secure files'
+  if system "#{docker_cmd} \
+    vladgh/awscli sh -c 'aws s3 sync --delete --exact-timestamps \
+      #{SECURE_S3PATH}/ /etc/puppetlabs/secure/ && \
+      find /etc/puppetlabs/secure/ -type d -empty -delete'"
+    File.write('/var/local/deployed_secure_files', Time.now.localtime)
+    logger.info 'Secure files downloaded'
+  else
+    logger.warn 'Failed to download secure files'
+  end
+end
+
+# Download Hiera data
+def download_hieradata
+  logger.info 'Download Hiera data'
+  if system "#{docker_cmd} \
+    vladgh/awscli sh -c 'aws s3 sync --delete --exact-timestamps \
+      #{HIERA_S3PATH}/ /etc/puppetlabs/hieradata/ && \
+      find /etc/puppetlabs/hieradata/ -type d -empty -delete'"
+    File.write('/var/local/deployed_hieradata', Time.now.localtime)
+    logger.info 'Hiera data downloaded'
+  else
+    logger.warn 'Failed to download Hiera data'
+  end
+end
+
 # Deploy R10K
-def run_r10k_deploy
+def deploy_r10k
   logger.info 'Deploy R10K'
-  logger.debug `r10k deploy environment --puppetfile`
-  File.write('/var/local/deployed_r10k', Time.now.localtime)
-  logger.info 'R10K deployed'
+  if system "#{docker_cmd} \
+    -e REMOTE='#{CONTROL_REPO}' \
+    vladgh/r10k r10k deploy environment --puppetfile"
+    File.write('/var/local/deployed_r10k', Time.now.localtime)
+    logger.info 'R10K deployed'
+  else
+    logger.warn 'Failed to deploy R10K'
+  end
 end
 
 # Only allow authorized requests
