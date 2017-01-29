@@ -8,4 +8,8 @@ describe 'Dockerfile' do
   describe package('aws-sdk') do
     it { is_expected.to be_installed.by('gem') }
   end
+
+  describe package('hiera-eyaml') do
+    it { is_expected.to be_installed.by('gem') }
+  end
 end
