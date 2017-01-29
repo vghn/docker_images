@@ -10,11 +10,10 @@ require 'sinatra'
 require 'yaml'
 
 # VARs
-CONFIG_FILE   = ENV['API_CONFIG']
-DATA_SERVICE  = ENV['DATA_SERVICE']
-SECURE_S3PATH = ENV['SECURE_S3PATH']
-HIERA_S3PATH  = ENV['HIERA_S3PATH']
-CONTROL_REPO  = ENV['CONTROL_REPO']
+CONFIG_FILE     = ENV['API_CONFIG']
+DATA_SERVICE    = ENV['DATA_SERVICE']
+SECRETS_SERVICE = ENV['SECRETS_SERVICE']
+CONTROL_REPO    = ENV['CONTROL_REPO']
 
 # Logging
 def logger
@@ -38,20 +37,20 @@ def wait_for_config
 end
 
 # Get the data container ID
-def data_container_id
-  data_service_name = ENV['DATA_SERVICE'] || 'data'
-
+def data_container_id(service)
   @data_container_id ||= `docker ps --latest --all --filter \
-    "label=com.docker.compose.service=#{data_service_name}" \
+    "label=com.docker.compose.service=#{service}" \
     --format "{{.ID}}"`.chomp
 end
 
 # Compose the volume arguments for the Docker command
 def docker_cmd
   @docker_cmd = 'docker run --rm'
-  if data_container_id != ''
-    @docker_cmd += " --volumes-from #{data_container_id}"
+
+  if DATA_SERVICE
+    @docker_cmd += " --volumes-from #{data_container_id DATA_SERVICE}"
   end
+
   return @docker_cmd
 end
 
@@ -64,26 +63,16 @@ end
 
 # Deployment
 def deploy
-  deploy_secure_files_thread
-  deploy_hieradata_thread
+  deploy_secrets_thread
   deploy_r10k_thread
 end
 
-# Deploy secure files
-def deploy_secure_files_thread
-  if SECURE_S3PATH
-    Thread.new { download_secure_files }
+# Deploy secrets
+def deploy_secrets_thread
+  if SECRETS_SERVICE
+    Thread.new { download_secrets }
   else
-    logger.warn 'Skip downloading secure files because SECURE_S3PATH is not set!'
-  end
-end
-
-# Deploy Hiera data
-def deploy_hieradata_thread
-  if HIERA_S3PATH
-    Thread.new { download_hieradata }
-  else
-    logger.warn 'Skip downloading hiera data because HIERA_S3PATH is not set!'
+    logger.warn 'Skip downloading secrets because SECRETS_SERVICE is not set!'
   end
 end
 
@@ -96,33 +85,16 @@ def deploy_r10k_thread
   end
 end
 
-# Download secure files
+# Download secrets
 # '--volumes-from' is needed here because docker in docker does not work with
 # volumes mounted from the host
-def download_secure_files
-  logger.info 'Download secure files'
-  if system "#{docker_cmd} \
-    vladgh/awscli sh -c 'aws s3 sync --delete --exact-timestamps \
-      #{SECURE_S3PATH}/ /etc/puppetlabs/secure/ && \
-      find /etc/puppetlabs/secure/ -type d -empty -delete'"
-    File.write('/var/local/deployed_secure_files', Time.now.localtime)
-    logger.info 'Secure files downloaded'
+def download_secrets
+  logger.info 'Download secrets'
+  if system "docker start #{data_container_id SECRETS_SERVICE}"
+    File.write('/var/local/deployed_secrets', Time.now.localtime)
+    logger.info 'Secrets downloaded'
   else
-    logger.warn 'Failed to download secure files'
-  end
-end
-
-# Download Hiera data
-def download_hieradata
-  logger.info 'Download Hiera data'
-  if system "#{docker_cmd} \
-    vladgh/awscli sh -c 'aws s3 sync --delete --exact-timestamps \
-      #{HIERA_S3PATH}/ /etc/puppetlabs/hieradata/ && \
-      find /etc/puppetlabs/hieradata/ -type d -empty -delete'"
-    File.write('/var/local/deployed_hieradata', Time.now.localtime)
-    logger.info 'Hiera data downloaded'
-  else
-    logger.warn 'Failed to download Hiera data'
+    logger.warn 'Failed to download secrets'
   end
 end
 

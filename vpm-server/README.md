@@ -16,7 +16,3 @@ Based on https://hub.docker.com/r/vladgh/puppetserver/
 
 #### Packages:
 - `aws-sdk` gem
-
-#### Files:
-- `csr-sign`: Policy-based auto signing script
-- `hiera.yaml`: Hiera configuration file
