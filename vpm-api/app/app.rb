@@ -23,17 +23,6 @@ def config
   @config ||= YAML.load_file(CONFIG)
 end
 
-# Wait for the configuration
-def wait_for_config
-  if CONFIG
-    logger.info 'Wait for the configuration'
-    sleep 1 until File.exist?(CONFIG)
-    logger.info 'Configuration found'
-  else
-    logger.warn 'Skip configuration because API_CONFIG is not set!'
-  end
-end
-
 # Create a list of docker compose services
 def services
   services ||= SERVICE.split(',') if SERVICE
@@ -50,7 +39,6 @@ end
 def initial_deployment
   logger.info 'Start initial deployment'
   start_services
-  wait_for_config
 end
 
 # Deployment
