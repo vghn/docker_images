@@ -45,7 +45,7 @@ end
 def start_services
   services.each do |service|
     Thread.new do
-      logger.info "Starting #{`docker start #{get_container_id service}`} container"
+      logger.info "Starting #{`docker start #{get_container_id service}`.strip} container"
     end
   end
 end
