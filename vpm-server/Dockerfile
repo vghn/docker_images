@@ -7,7 +7,7 @@ ENV AWS_DEFAULT_REGION='us-east-1' \
     HIERA_EYAML_VERSION='~> 2.0'
 
 # Install Hiera EYaml
-RUN puppetserver gem install hiera-eyaml:"${HIERA_EYAML_VERSION}" --no-ri --no-rdoc && \
+RUN puppetserver gem install hiera-eyaml:"${HIERA_EYAML_VERSION}" --no-ri --no-rdoc
 
 # Install AWS SDK
 RUN gem install aws-sdk:"${AWS_SDK_VERSION}" --no-ri --no-rdoc
