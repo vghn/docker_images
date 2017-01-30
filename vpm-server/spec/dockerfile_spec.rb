@@ -9,7 +9,7 @@ describe 'Dockerfile' do
     it { is_expected.to be_installed.by('gem') }
   end
 
-  describe package('hiera-eyaml') do
-    it { is_expected.to be_installed.by('gem') }
+  describe command('puppetserver gem list') do
+    its(:stdout) { is_expected.to match(/hiera-eyaml/) }
   end
 end
