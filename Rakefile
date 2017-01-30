@@ -185,7 +185,7 @@ namespace :docker do
         sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
           #{docker_image}:#{docker_tag_major}"
 
-        if git_branch == 'master' && ENV['TRAVIS_PULL_REQUEST'] == false
+        if git_branch == 'master' && ENV['TRAVIS_PULL_REQUEST'] == 'false'
           info "Tagging #{docker_image}:latest"
           sh "cd #{docker_dir} && docker tag #{docker_image}:latest"
         end
@@ -205,7 +205,7 @@ namespace :docker do
         info "Pushing #{docker_image}:#{docker_tag_major} to Docker Hub"
         sh "docker push #{docker_image}:#{docker_tag_major}"
 
-        if git_branch == 'master'
+        if git_branch == 'master' && ENV['TRAVIS_PULL_REQUEST'] == 'false'
           info "Pushing #{docker_image}:latest to Docker Hub"
           sh "docker push '#{docker_image}:latest'"
         end
