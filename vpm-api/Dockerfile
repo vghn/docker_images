@@ -1,13 +1,13 @@
-FROM ruby:2.3-alpine
+FROM ruby:2.4-alpine
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
 RUN apk --no-cache add ca-certificates curl openssl
 
-# https://github.com/docker-library/docker/blob/master/1.12/Dockerfile
+# https://github.com/docker-library/docker/blob/master/1.13/Dockerfile
 ENV DOCKER_BUCKET get.docker.com
-ENV DOCKER_VERSION 1.12.5
-ENV DOCKER_SHA256 0058867ac46a1eba283e2441b1bb5455df846144f9d9ba079e97655399d4a2c6
+ENV DOCKER_VERSION 1.13.0
+ENV DOCKER_SHA256 fc194bb95640b1396283e5b23b5ff9d1b69a5e418b5b3d774f303a7642162ad6
 RUN set -x \
     && curl -fSL "https://${DOCKER_BUCKET}/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz" -o docker.tgz \
     && echo "${DOCKER_SHA256} *docker.tgz" | sha256sum -c - \
