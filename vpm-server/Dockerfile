@@ -14,7 +14,6 @@ RUN gem install aws-sdk:"${AWS_SDK_VERSION}" --no-ri --no-rdoc
 
 # Copy config files
 COPY hiera.yaml /etc/puppetlabs/puppet/hiera.yaml
-COPY csr-sign /usr/local/bin/
 
 # Metadata params
 ARG VERSION
