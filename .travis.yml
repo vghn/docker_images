@@ -23,7 +23,7 @@ install: bundle install --path vendor/bundle
 script:
 - bundle exec rake docker:${IMAGE}:build
 - bundle exec rake docker:${IMAGE}:spec
-- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bundle exec rake docker:${IMAGE}:push; fi
+- bundle exec rake docker:${IMAGE}:push
 - curl -X POST "$MICROBADGER_WEBHOOK"
 notifications:
   slack:
