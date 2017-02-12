@@ -218,22 +218,22 @@ module Tasks
 
             desc 'Publish docker image'
             task push: :docker do
+              return unless ENV['TRAVIS_PULL_REQUEST'] == 'false'
               info "Pushing #{docker_image}:#{docker_tag_full} to Docker Hub"
               sh "docker push #{docker_image}:#{docker_tag_full}"
 
-              if git_branch == 'master' && ENV['TRAVIS_PULL_REQUEST'] == 'false'
-                info "Pushing #{docker_image}:#{docker_tag_long} to Docker Hub"
-                sh "docker push #{docker_image}:#{docker_tag_long}"
+              return unless git_branch == 'master'
+              info "Pushing #{docker_image}:#{docker_tag_long} to Docker Hub"
+              sh "docker push #{docker_image}:#{docker_tag_long}"
 
-                info "Pushing #{docker_image}:#{docker_tag_minor} to Docker Hub"
-                sh "docker push #{docker_image}:#{docker_tag_minor}"
+              info "Pushing #{docker_image}:#{docker_tag_minor} to Docker Hub"
+              sh "docker push #{docker_image}:#{docker_tag_minor}"
 
-                info "Pushing #{docker_image}:#{docker_tag_major} to Docker Hub"
-                sh "docker push #{docker_image}:#{docker_tag_major}"
+              info "Pushing #{docker_image}:#{docker_tag_major} to Docker Hub"
+              sh "docker push #{docker_image}:#{docker_tag_major}"
 
-                info "Pushing #{docker_image}:latest to Docker Hub"
-                sh "docker push #{docker_image}:latest"
-              end
+              info "Pushing #{docker_image}:latest to Docker Hub"
+              sh "docker push #{docker_image}:latest"
             end
           end # task push
         end # docker_images.each
