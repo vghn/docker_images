@@ -197,43 +197,42 @@ module Tasks
               info "Building #{docker_image}:#{docker_tag_full}"
               sh "#{cmd} -t #{docker_image}:#{docker_tag_full} ."
 
-              if git_branch == 'master' && ENV['TRAVIS_PULL_REQUEST'] == 'false'
-                info "Tagging #{docker_image}:#{docker_tag_long} image"
-                sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
-                  #{docker_image}:#{docker_tag_long}"
+              next unless git_branch == 'master' && ENV['TRAVIS_PULL_REQUEST'] == 'false'
+              info "Tagging #{docker_image}:#{docker_tag_long} image"
+              sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
+                #{docker_image}:#{docker_tag_long}"
 
-                info "Tagging #{docker_image}:#{docker_tag_minor} image"
-                sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
-                  #{docker_image}:#{docker_tag_minor}"
+              info "Tagging #{docker_image}:#{docker_tag_minor} image"
+              sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
+                #{docker_image}:#{docker_tag_minor}"
 
-                info "Tagging #{docker_image}:#{docker_tag_major} image"
-                sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
-                  #{docker_image}:#{docker_tag_major}"
+              info "Tagging #{docker_image}:#{docker_tag_major} image"
+              sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
+                #{docker_image}:#{docker_tag_major}"
 
-                info "Tagging #{docker_image}:latest"
-                sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
-                  #{docker_image}:latest"
-              end
+              info "Tagging #{docker_image}:latest"
+              sh "cd #{docker_dir} && docker tag #{docker_image}:#{docker_tag_full} \
+                #{docker_image}:latest"
             end # task build
 
             desc 'Publish docker image'
             task push: :docker do
+              next unless ENV['TRAVIS_PULL_REQUEST'] == 'false'
               info "Pushing #{docker_image}:#{docker_tag_full} to Docker Hub"
               sh "docker push #{docker_image}:#{docker_tag_full}"
 
-              if git_branch == 'master' && ENV['TRAVIS_PULL_REQUEST'] == 'false'
-                info "Pushing #{docker_image}:#{docker_tag_long} to Docker Hub"
-                sh "docker push #{docker_image}:#{docker_tag_long}"
+              next unless git_branch == 'master'
+              info "Pushing #{docker_image}:#{docker_tag_long} to Docker Hub"
+              sh "docker push #{docker_image}:#{docker_tag_long}"
 
-                info "Pushing #{docker_image}:#{docker_tag_minor} to Docker Hub"
-                sh "docker push #{docker_image}:#{docker_tag_minor}"
+              info "Pushing #{docker_image}:#{docker_tag_minor} to Docker Hub"
+              sh "docker push #{docker_image}:#{docker_tag_minor}"
 
-                info "Pushing #{docker_image}:#{docker_tag_major} to Docker Hub"
-                sh "docker push #{docker_image}:#{docker_tag_major}"
+              info "Pushing #{docker_image}:#{docker_tag_major} to Docker Hub"
+              sh "docker push #{docker_image}:#{docker_tag_major}"
 
-                info "Pushing #{docker_image}:latest to Docker Hub"
-                sh "docker push #{docker_image}:latest"
-              end
+              info "Pushing #{docker_image}:latest to Docker Hub"
+              sh "docker push #{docker_image}:latest"
             end
           end # task push
         end # docker_images.each
