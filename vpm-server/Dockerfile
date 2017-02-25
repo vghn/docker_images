@@ -4,7 +4,8 @@ MAINTAINER Vlad Ghinea vlad@ghn.me
 # Environment
 ENV AWS_DEFAULT_REGION='us-east-1' \
     AWS_SDK_VERSION='~> 2.0' \
-    HIERA_EYAML_VERSION='~> 2.0'
+    HIERA_EYAML_VERSION='~> 2.0' \
+    AUTOSIGN='/usr/local/bin/csr-sign'
 
 # Install Hiera EYaml
 RUN puppetserver gem install hiera-eyaml:"${HIERA_EYAML_VERSION}" --no-ri --no-rdoc
@@ -14,6 +15,7 @@ RUN gem install aws-sdk:"${AWS_SDK_VERSION}" --no-ri --no-rdoc
 
 # Copy config files
 COPY hiera.yaml /etc/puppetlabs/puppet/hiera.yaml
+COPY csr-sign /usr/local/bin/csr-sign
 
 # Metadata params
 ARG VERSION
