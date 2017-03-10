@@ -30,7 +30,7 @@ end
 
 # Get the data container ID
 def get_container_id(service)
-  @data_container_id ||= `docker ps --latest --all --filter \
+  @data_container_id ||= `docker container ls --latest --all --filter \
     "label=com.docker.compose.service=#{service}" \
     --format "{{.ID}}"`.chomp
 end
@@ -45,7 +45,7 @@ end
 def start_services
   services.each do |service|
     Thread.new do
-      logger.info "Starting #{`docker start #{get_container_id service}`.strip} container"
+      logger.info "Starting #{`docker container start #{get_container_id service}`.strip} container"
     end
   end
 end
