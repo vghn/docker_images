@@ -16,14 +16,10 @@ describe 'Dockerfile' do
     end
   end
 
-  gems = %w(faraday json puma sinatra)
+  gems = %w(docker-api faraday json puma sinatra)
   gems.each do |pkg|
     describe package(pkg) do
       it { is_expected.to be_installed.by('gem') }
     end
-  end
-
-  describe command('docker --version') do
-    its(:exit_status) { is_expected.to eq 0 }
   end
 end
