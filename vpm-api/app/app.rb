@@ -1,4 +1,5 @@
 require 'base64'
+require 'docker'
 require 'erb'
 require 'faraday'
 require 'fileutils'
@@ -10,8 +11,8 @@ require 'sinatra'
 require 'yaml'
 
 # VARs
-CONFIG  = ENV['API_CONFIG']
-SERVICE = ENV['SERVICE']
+CONFIG   = ENV['API_CONFIG']
+SERVICES = ENV['SERVICES']
 
 # Logging
 def logger
@@ -25,14 +26,18 @@ end
 
 # Create a list of docker compose services
 def services
-  services ||= SERVICE.split(',') if SERVICE
+  services ||= SERVICES.split(',') if SERVICES
 end
 
-# Get the data container ID
-def get_container_id(service)
-  @data_container_id ||= `docker container ls --latest --all --filter \
-    "label=com.docker.compose.service=#{service}" \
-    --format "{{.ID}}"`.chomp
+# Get the container ID from a docker-compose service label
+def container(service)
+  @container ||= Docker::Container.all(
+    all: true,
+    limit: 1,
+    filters: {
+      label: ["com.docker.compose.service=#{service}"]
+    }.to_json
+  ).first
 end
 
 # Initial deployment
@@ -45,7 +50,7 @@ end
 def start_services
   services.each do |service|
     Thread.new do
-      logger.info "Starting #{`docker container start #{get_container_id service}`.strip} container"
+      logger.info "Starting #{container(service).start}"
     end
   end
 end
