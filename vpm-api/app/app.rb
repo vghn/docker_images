@@ -48,6 +48,7 @@ end
 
 # Deployment
 def start_services
+  Thread.abort_on_exception = true
   services.each do |service|
     Thread.new do
       logger.info "Starting #{container(service).start}"
