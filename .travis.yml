@@ -11,10 +11,10 @@ env:
   global:
   - DOCKER_REPOSITORY=vladgh
   matrix:
-  - IMAGE=lb MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/lb/'
-  - IMAGE=le MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/le/'
-  - IMAGE=ps MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/ps/'
-  - IMAGE=wh MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/wh/'
+  - IMAGE=lb MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/lb/aYrA0-kryIhSzt0zvxo9pV33P94='
+  - IMAGE=le MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/le/4wI8LWxfyozselpKPwWadjnUhLU='
+  - IMAGE=ps MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/ps/mEg-V3l12ZnWx1gOq3ZmPBz-5hE='
+  - IMAGE=wh MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/wh/U6IY-vaxZ2FZhFWxA3QKpUKGjeg='
 before_install:
 - sudo apt-get -qy update && sudo apt-get -qy -o Dpkg::Options::="--force-confdef"
   -o Dpkg::Options::="--force-confold" install docker-engine
