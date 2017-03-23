@@ -26,7 +26,7 @@ ARG BUILD_DATE
 # Metadata
 LABEL org.label-schema.vendor="Puppet" \
       org.label-schema.url="https://github.com/puppetlabs/puppetserver" \
-      org.label-schema.name="Puppet Server" \
+      org.label-schema.name="Vlad's Puppet Server" \
       org.label-schema.license="Apache-2.0" \
       org.label-schema.version="$VERSION" \
       org.label-schema.vcs-url="$VCS_URL" \
