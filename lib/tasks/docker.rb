@@ -73,7 +73,6 @@ module Tasks
               info "Building #{docker_image}:#{docker_tag_full}"
               sh "#{cmd} -t #{docker_image}:#{docker_tag_full} ."
 
-              next unless git_branch == 'master' && ENV['TRAVIS_PULL_REQUEST'] == 'false'
               info "Tagging #{docker_image}:#{docker_tag_long} image"
               sh "cd #{docker_dir} && docker image tag #{docker_image}:#{docker_tag_full} \
                 #{docker_image}:#{docker_tag_long}"
@@ -93,11 +92,9 @@ module Tasks
 
             desc 'Publish docker image'
             task push: :docker do
-              next unless ENV['TRAVIS_PULL_REQUEST'] == 'false'
               info "Pushing #{docker_image}:#{docker_tag_full} to Docker Hub"
               sh "docker image push #{docker_image}:#{docker_tag_full}"
 
-              next unless git_branch == 'master'
               info "Pushing #{docker_image}:#{docker_tag_long} to Docker Hub"
               sh "docker image push #{docker_image}:#{docker_tag_long}"
 
