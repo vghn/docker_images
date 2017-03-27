@@ -6,6 +6,7 @@ IFS=$'\n\t'
 
 # VARs
 LIVE_CERT_FOLDER="${LIVE_CERT_FOLDER:-/etc/letsencrypt/live}"
+OPTIONS="${OPTIONS:-}"
 
 # Log message
 log(){
