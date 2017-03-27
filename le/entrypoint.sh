@@ -55,7 +55,7 @@ update_certificates(){
   # Create or renew certificates
   for DOMAINS in "${CERTS[@]}"; do
     log "Generating SSL certificates for ${DOMAINS}"
-    certbot certonly \
+    eval certbot certonly \
       --domains "$DOMAINS" \
       --email "$EMAIL" \
       --expand \

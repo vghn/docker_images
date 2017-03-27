@@ -15,9 +15,21 @@ Based on https://quay.io/repository/letsencrypt/letsencrypt and https://github.c
 ### Changes:
 
 #### Environment variables:
+- `OPTIONS`: additional arguments to `certbot` (e.g. `--staging`)
+
+  ***VERY IMPORTANT***
+
+  Make sure you set the environment variable OPTIONS: --staging on the letsencrypt
+  service  until you are 100% sure you are configured properly and you want to get
+  a real certificate. Otherwise you’ll reach the 5 certificates limit per domain
+  per week and you’ll end up waiting a week before being able to regenerate a valid
+  certificate if you didn’t backup the ones already generated
+
 - `DOMAINS`: [required] a list of domains and subdomains. Certificates from different domains are separated by semi-colon (;) and subdomains are separated by comma (,).
   Ex: DOMAINS=foo.com,www.foo.com;bar.com,www.bar.com
+
 - `EMAIL`: [required] the email address to be used for all certificates
+
 - `LOAD_BALANCER_SERVICE_NAME`: [required] used to wait for this service to be listening on port 80 before starting the certbot service.
 
 #### Packages:
