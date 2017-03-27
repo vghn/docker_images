@@ -64,7 +64,7 @@ update_certificates(){
       --text \
       --webroot \
       --webroot-path /tmp/www \
-      $OPTIONS || true
+      "$OPTIONS" || true
   done
 }
 
@@ -82,7 +82,7 @@ main(){
   generate_temp_certificate
 
   setup_cron
-  create_web_server &
+  (create_web_server 80) &
 
   log 'Waiting for service SimpleHTTPServer'
   wait_for_server localhost

@@ -28,7 +28,7 @@ ensure_cert_folders(){
 
 # Abort, if already running.
 check_inotify(){
-  if [[ -n "$(ps | grep inotifywait | grep -v grep)" ]]; then
+  if pgrep -f inotifywait > /dev/null; then
     log "Already watching directory: ${LIVE_CERT_FOLDER}"; exit 1
   fi
 }
@@ -78,7 +78,7 @@ watch_certificates_folder(){
     --quiet \
     --recursive \
     "$LIVE_CERT_FOLDER" |
-  while read CHANGED
+  while read -r CHANGED
   do
     log "$CHANGED"
     NOW="$(date +%s)"
