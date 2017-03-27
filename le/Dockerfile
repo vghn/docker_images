@@ -1,5 +1,21 @@
-FROM quay.io/letsencrypt/letsencrypt:latest
+FROM alpine:3.5
 MAINTAINER Vlad Ghinea vlad@ghn.me
+
+# Install packages
+RUN apk --no-cache add bash certbot openssl
+
+# Ports
+EXPOSE 80
+
+# Sets the HAProxy parameters to ensure this container
+# handles letsencrypt traffic
+ENV VIRTUAL_HOST="*/.well-known/acme-challenge/*"
+ENV VIRTUAL_HOST_WEIGHT="999"
+
+# Entrypoint
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["crond", "-f"]
 
 # Metadata params
 ARG VERSION
