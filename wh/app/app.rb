@@ -40,18 +40,12 @@ def container(service)
   ).first
 end
 
-# Initial deployment
-def initial_deployment
-  logger.info 'Start initial deployment'
-  start_services
-end
-
-# Deployment
-def start_services
+# Restart services
+def restart_services
   Thread.abort_on_exception = true
   services.each do |service|
     Thread.new do
-      logger.info "Starting #{container(service).start}"
+      logger.info "Restarting #{container(service).restart}"
     end
   end
 end
@@ -92,6 +86,12 @@ def travis_public_key
   JSON.parse(response.body)['config']['notifications']['webhook']['public_key']
 end
 
+# Initial deployment
+def initial_deployment
+  logger.info 'Start initial deployment'
+  restart_services
+end
+
 # Configure Sinatra
 enable :logging
 
@@ -120,7 +120,7 @@ post '/travis' do
               "for the #{payload['branch']} branch " \
               "of repository #{payload['repository']['name']}"
 
-  start_services
+  restart_services
 end
 
 # GitHub webhook
@@ -132,7 +132,7 @@ post '/github' do
   logger.info 'Authorized request received from GitHub user ' \
               "@#{payload['sender']['login']}"
 
-  start_services
+  restart_services
 end
 
 # Slack slash command
@@ -155,7 +155,7 @@ post '/slack' do
     case text
     when 'deploy'
       # Only use the threaded deployment because of the short timeout
-      start_services
+      restart_services
       'Services started in the background :thumbsup:'
     else
       "I don't understand '#{text}' :cry:"
