@@ -2,7 +2,7 @@ FROM ruby:2.4-alpine
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
-RUN apk --no-cache add ca-certificates curl openssl
+RUN apk --no-cache add ca-certificates curl openssl tini
 
 # Install gems
 COPY app/Gemfile /app/Gemfile
@@ -22,7 +22,7 @@ COPY app /app
 
 # Start server
 WORKDIR /app
-ENTRYPOINT [ "sh", "-c", "bundle exec puma --environment $RACK_ENV --port $RACK_PORT"]
+ENTRYPOINT [ "/sbin/tini", "--", "bundle exec puma --environment $RACK_ENV --port $RACK_PORT"]
 
 # Health
 HEALTHCHECK --interval=30s --timeout=30s --retries=10 CMD \

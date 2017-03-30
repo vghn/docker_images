@@ -9,7 +9,7 @@ describe 'Dockerfile' do
     expect(os[:family]).to eq('alpine')
   end
 
-  packages = %w(ca-certificates curl openssl)
+  packages = %w(ca-certificates curl openssl tini)
   packages.each do |pkg|
     describe package(pkg) do
       it { is_expected.to be_installed }
