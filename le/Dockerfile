@@ -2,7 +2,7 @@ FROM alpine:3.5
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
-RUN apk --no-cache add bash certbot openssl
+RUN apk --no-cache add bash certbot openssl tini
 
 # Ports
 EXPOSE 80
@@ -14,8 +14,8 @@ ENV VIRTUAL_HOST_WEIGHT="999"
 
 # Entrypoint
 COPY entrypoint.sh /
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["crond", "-f"]
+ENTRYPOINT ["/sbin/tini", "--", "/entrypoint.sh"]
+CMD ["crond", "-f", "-l", "6"]
 
 # Metadata params
 ARG VERSION

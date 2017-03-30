@@ -5,6 +5,17 @@ DOCKER_IMAGE_DIRECTORY = File.dirname(File.dirname(__FILE__))
 describe 'Dockerfile' do
   include_context 'with a docker container (override entrypoint)'
 
+  it 'uses the correct OS' do
+    expect(os[:family]).to eq('alpine')
+  end
+
+  packages = %w(bash certbot openssl tini)
+  packages.each do |pkg|
+    describe package(pkg) do
+      it { is_expected.to be_installed }
+    end
+  end
+
   describe command('certbot --version') do
     its(:stderr) { is_expected.to match(/certbot/) }
   end

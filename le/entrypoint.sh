@@ -10,7 +10,13 @@ OPTIONS="${OPTIONS:-}"
 
 # Log message
 log(){
-  echo "$(date): ${*}"
+  echo "[$(date "+%Y-%m-%dT%H:%M:%S%z") - $(hostname)] ${*}"
+}
+
+# Trap exit
+bye(){
+  log 'Exit detected; trying to clean up'
+  clean_up; exit "${1:-0}"
 }
 
 # Install cron
@@ -70,6 +76,9 @@ update_certificates(){
 }
 
 main(){
+  # Trap exit
+  trap 'EXCODE=$?; bye; trap - EXIT; echo $EXCODE' EXIT HUP INT QUIT PIPE TERM
+
   # Validate required environment variables.
   [[ -z "${DOMAINS+x}" ]] && MISSING="${MISSING} DOMAINS"
   [[ -z "${EMAIL+x}" ]] && MISSING="${MISSING} EMAIL"

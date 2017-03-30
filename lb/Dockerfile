@@ -2,11 +2,11 @@ FROM dockercloud/haproxy:1.6.4
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
-RUN apk --no-cache add bash inotify-tools
+RUN apk --no-cache add bash inotify-tools tini
 
 # Entrypoint
 COPY entrypoint.sh /
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/entrypoint.sh"]
 CMD ["dockercloud-haproxy"]
 
 # Metadata params

@@ -13,7 +13,7 @@ IGNORE_SECS=10
 
 # Log message
 log(){
-  echo "$(date): ${*}"
+  echo "[$(date "+%Y-%m-%dT%H:%M:%S%z") - $(hostname)] ${*}"
 }
 
 # Make sure the certificate folder is created
