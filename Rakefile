@@ -3,7 +3,10 @@ require 'bundler/setup'
 
 # Include task modules
 require 'vtasks/docker'
-Vtasks::Docker.new
+Vtasks::Docker.new(
+  repo: 'vladgh',
+  has_build_args: true
+)
 require 'vtasks/lint'
 Vtasks::Lint.new(file_list: FileList['lib/**/*.rb', 'spec/**/*.rb', 'Rakefile'])
 require 'vtasks/release'
