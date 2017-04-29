@@ -65,7 +65,7 @@ end
 
 # Verify GitHub signature
 def verify_github_signature(payload_body)
-  signature = 'sha1=' + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha1'), config['github_secret'], payload_body)
+  signature = 'sha1=' + OpenSSL::HMAC.hexdigest(OpenSSL::Digest::SHA1.new, config['github_secret'], payload_body)
   return halt 500, 'Signatures did not match!' unless Rack::Utils.secure_compare(signature, request.env['HTTP_X_HUB_SIGNATURE'])
 end
 
@@ -156,7 +156,7 @@ post '/slack' do
     when 'deploy'
       # Only use the threaded deployment because of the short timeout
       restart_services
-      'Services started in the background :thumbsup:'
+      'Services restarted in the background :thumbsup:'
     else
       "I don't understand '#{text}' :cry:"
     end
