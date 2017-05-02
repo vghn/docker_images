@@ -79,6 +79,8 @@ end
 
 # Get Travis public key
 def travis_public_key
+  return @travis_public_key if defined? @travis_public_key
+
   @conn = Faraday.new(url: 'https://api.travis-ci.org') do |faraday|
     faraday.adapter Faraday.default_adapter
   end
