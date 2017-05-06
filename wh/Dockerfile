@@ -15,14 +15,15 @@ ENV RACK_PORT=8523 \
     RACK_ENV=production
 
 # Expose ports
-EXPOSE ${RACK_PORT}
+EXPOSE $RACK_PORT
 
 # Copy application
 COPY app /app
 
 # Start server
 WORKDIR /app
-ENTRYPOINT [ "/sbin/tini", "--", "bundle exec puma --environment $RACK_ENV --port $RACK_PORT"]
+ENTRYPOINT [ "/sbin/tini", "--"]
+CMD ["sh", "-c", "bundle exec puma --environment ${RACK_ENV} --port ${RACK_PORT}"]
 
 # Health
 HEALTHCHECK --interval=30s --timeout=30s --retries=10 CMD \

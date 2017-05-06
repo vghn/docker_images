@@ -29,23 +29,37 @@ def services
   services ||= SERVICES.split(',') if SERVICES
 end
 
-# Get the container ID from a docker-compose service label
-def container(service)
+# Get the container ID from a service label
+# compose label: com.docker.compose.service
+# swarm label: com.docker.swarm.service.name
+# Note: Compose service is just the name (`MyService`) while in swarm it has the stack namespace (`MyStack_MyService`)
+def container(service, label)
   @container ||= Docker::Container.all(
     all: true,
     limit: 1,
     filters: {
-      label: ["com.docker.compose.service=#{service}"]
+      label: ["#{label}=#{service}"]
     }.to_json
   ).first
+rescue Excon::Error::Socket
+  logger.warn "Could not connect to docker daemon!"
+  return nil
 end
 
 # Restart services
 def restart_services
   Thread.abort_on_exception = true
+  return if services.nil? || services.empty?
   services.each do |service|
+    # Try compose labels first
+    cid = container(service, 'com.docker.compose.service')
+    if cid.nil? || cid.empty?
+      cid = container(service, 'com.docker.swarm.service.name')
+    end
+
+    return if cid.nil? || cid.empty?
     Thread.new do
-      logger.info "Restarting #{container(service).restart}"
+      logger.info "Restarting #{cid.restart}"
     end
   end
 end
