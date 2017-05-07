@@ -34,7 +34,7 @@ end
 # swarm label: com.docker.swarm.service.name
 # Note: Compose service is just the name (`MyService`) while in swarm it has the stack namespace (`MyStack_MyService`)
 def container(service, label)
-  @container ||= Docker::Container.all(
+  @container = Docker::Container.all(
     all: true,
     limit: 1,
     filters: {
