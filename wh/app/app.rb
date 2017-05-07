@@ -34,7 +34,7 @@ end
 # swarm label: com.docker.swarm.service.name
 # Note: Compose service is just the name (`MyService`) while in swarm it has the stack namespace (`MyStack_MyService`)
 def container(service, label)
-  @container ||= Docker::Container.all(
+  @container = Docker::Container.all(
     all: true,
     limit: 1,
     filters: {
@@ -51,16 +51,14 @@ def restart_services
   Thread.abort_on_exception = true
   return if services.nil? || services.empty?
   services.each do |service|
-    # Try compose labels first
-    cid = container(service, 'com.docker.compose.service')
-    if cid.nil? || cid.empty?
-      cid = container(service, 'com.docker.swarm.service.name')
-    end
+    # Try compose labels first then fallback to swarm mode
+    cid = container(service, 'com.docker.compose.service') || \
+          container(service, 'com.docker.swarm.service.name')
 
-    return if cid.nil? || cid.empty?
+    # Restart containers in their own thread (if they exist)
     Thread.new do
       logger.info "Restarting #{cid.restart}"
-    end
+    end unless cid.nil?
   end
 end
 
