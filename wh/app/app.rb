@@ -161,7 +161,7 @@ post '/slack' do
     logger.info "Authorized request received from slacker @#{user} " \
                 "on channel ##{channel}"
   else
-    log.warn "Unauthorized token received from slacker @#{user}"
+    logger.warn "Unauthorized token received from slacker @#{user}"
   end
 
   case command
