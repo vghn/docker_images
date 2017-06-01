@@ -23,7 +23,7 @@ COPY app /app
 # Start server
 WORKDIR /app
 ENTRYPOINT [ "/sbin/tini", "--"]
-CMD ["sh", "-c", "bundle exec puma --environment ${RACK_ENV} --port ${RACK_PORT}"]
+CMD bundle exec puma --environment $RACK_ENV --port $RACK_PORT
 
 # Health
 HEALTHCHECK --interval=30s --timeout=30s --retries=10 CMD \
