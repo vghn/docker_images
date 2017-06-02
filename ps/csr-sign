@@ -10,21 +10,13 @@ require 'aws-sdk'
 @cert = ARGV[0]
 @csr  = OpenSSL::X509::Request.new(STDIN.read)
 
-# Load AWS SDK (EC2)
+# Configure AWS SDK
+region = ENV['AWS_DEFAULT_REGION'] || 'us-east-1'
+Aws.config.update({region: region})
+
+# AWS EC2
 def ec2
-  region = ENV['AWS_DEFAULT_REGION'] || 'us-east-1'
-  if File.file?('/run/secrets/aws_access_key_id') && \
-     File.file?('/run/secrets/aws_secret_access_key')
-    Aws::EC2::Resource.new(
-      region: region,
-      credentials: Aws::Credentials.new(
-        File.read('/run/secrets/aws_access_key_id').strip,
-        File.read('/run/secrets/aws_secret_access_key').strip
-      )
-    )
-  else
-    Aws::EC2::Resource.new(region: region)
-  end
+  Aws::EC2::Resource.new
 end
 
 # Configuration
