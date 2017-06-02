@@ -13,7 +13,18 @@ require 'aws-sdk'
 # Load AWS SDK (EC2)
 def ec2
   region = ENV['AWS_DEFAULT_REGION'] || 'us-east-1'
-  Aws::EC2::Resource.new(region: region)
+  if File.file?('/run/secrets/aws_access_key_id') && \
+     File.file?('/run/secrets/aws_secret_access_key')
+    Aws::EC2::Resource.new(
+      region: region,
+      credentials: Aws::Credentials.new(
+        File.read('/run/secrets/aws_access_key_id').strip,
+        File.read('/run/secrets/aws_secret_access_key').strip
+      )
+    )
+  else
+    Aws::EC2::Resource.new(region: region)
+  end
 end
 
 # Configuration
