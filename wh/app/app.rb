@@ -12,7 +12,6 @@ require 'yaml'
 
 # VARs
 CONFIG   = ENV['API_CONFIG']
-SERVICES = ENV['SERVICES']
 
 # Logging
 def logger
@@ -26,7 +25,7 @@ end
 
 # Create a list of docker compose services
 def services
-  services ||= SERVICES.split(',') if SERVICES
+  services ||= config['services_to_restart']
 end
 
 # Get the container ID from a service label
