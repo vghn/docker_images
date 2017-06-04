@@ -28,7 +28,6 @@ end
 def container(label, service)
   @container = Docker::Container.all(
     all: false,
-    limit: 1,
     filters: {
       label: ["#{label}=#{service}"]
     }.to_json
@@ -42,8 +41,8 @@ end
 def deploy_r10k
   Thread.new do
     logger.info 'Deploying R10K environment'
-    container(R10K_SERVICE_NAME, 'com.docker.swarm.service.name').first
-      .exec('r10k deploy environment --puppetfile')
+    container('com.docker.swarm.service.name', R10K_SERVICE_NAME).first
+      .exec(['r10k', 'deploy', 'environment', '--puppetfile'])
   end
 end
 
