@@ -11,7 +11,8 @@ require 'sinatra'
 require 'yaml'
 
 # VARs
-CONFIG   = ENV['API_CONFIG']
+CONFIG            = ENV['API_CONFIG']
+R10K_SERVICE_NAME = 'vpm_r10k'
 
 # Logging
 def logger
@@ -23,41 +24,26 @@ def config
   @config ||= YAML.load_file(CONFIG)
 end
 
-# Create a list of docker compose services
-def services
-  services ||= config['services_to_restart']
-end
-
-# Get the container ID from a service label
-# compose label: com.docker.compose.service
-# swarm label: com.docker.swarm.service.name
-# Note: Compose service is just the name (`MyService`) while in swarm it has the stack namespace (`MyStack_MyService`)
-def container(service, label)
+# Filter running containers by service label
+def container(label, service)
   @container = Docker::Container.all(
-    all: true,
+    all: false,
     limit: 1,
     filters: {
       label: ["#{label}=#{service}"]
     }.to_json
-  ).first
+  )
 rescue Excon::Error::Socket
   logger.warn "Could not connect to docker daemon!"
   return nil
 end
 
-# Restart services
-def restart_services
-  Thread.abort_on_exception = true
-  return if services.nil? || services.empty?
-  services.each do |service|
-    # Try compose labels first then fallback to swarm mode
-    cid = container(service, 'com.docker.compose.service') || \
-          container(service, 'com.docker.swarm.service.name')
-
-    # Restart containers in their own thread (if they exist)
-    Thread.new do
-      logger.info "Restarting #{cid.restart}"
-    end unless cid.nil?
+# Deploy R10K in a separate thread
+def deploy_r10k
+  Thread.new do
+    logger.info 'Deploying R10K environment'
+    container(R10K_SERVICE_NAME, 'com.docker.swarm.service.name').first
+      .exec('r10k deploy environment --puppetfile')
   end
 end
 
@@ -102,7 +88,7 @@ end
 # Initial deployment
 def initial_deployment
   logger.info 'Start initial deployment'
-  restart_services
+  deploy_r10k
 end
 
 # Configure Sinatra
@@ -133,7 +119,7 @@ post '/travis' do
               "for the #{payload['branch']} branch " \
               "of repository #{payload['repository']['name']}"
 
-  restart_services
+  deploy_r10k
 end
 
 # GitHub webhook
@@ -145,7 +131,7 @@ post '/github' do
   logger.info 'Authorized request received from GitHub user ' \
               "@#{payload['sender']['login']}"
 
-  restart_services
+  # not implemented yet
 end
 
 # Slack slash command
@@ -168,8 +154,8 @@ post '/slack' do
     case text
     when 'deploy'
       # Only use the threaded deployment because of the short timeout
-      restart_services
-      'Services restarted in the background :thumbsup:'
+      deploy_r10k
+      'R10K will deploy in the background :thumbsup:'
     else
       "I don't understand '#{text}' :cry:"
     end
