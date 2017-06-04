@@ -11,11 +11,11 @@ RUN apk --no-cache add --virtual build-dependencies ruby-dev build-base && \
     apk del build-dependencies
 
 # Environment
-ENV RACK_PORT=8523 \
-    RACK_ENV=production
+ENV APP_PORT=8523 \
+    APP_ENV=production
 
 # Expose ports
-EXPOSE $RACK_PORT
+EXPOSE $APP_PORT
 
 # Copy application
 COPY app /app
@@ -23,11 +23,11 @@ COPY app /app
 # Start server
 WORKDIR /app
 ENTRYPOINT [ "/sbin/tini", "--"]
-CMD bundle exec puma --environment $RACK_ENV --port $RACK_PORT
+CMD bundle exec puma --environment $APP_ENV --port $APP_PORT
 
 # Health
 HEALTHCHECK --interval=30s --timeout=30s --retries=10 CMD \
-  curl --silent --fail "http://localhost:${RACK_PORT}/status" || exit 1
+  curl --silent --fail "http://localhost:${APP_PORT}/status" || exit 1
 
 # Metadata params
 ARG VERSION
