@@ -1,4 +1,4 @@
-FROM dockercloud/haproxy:1.6.6
+FROM dockercloud/haproxy:1.6.7
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
