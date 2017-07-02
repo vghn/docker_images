@@ -11,7 +11,7 @@ ENV AWS_DEFAULT_REGION='us-east-1' \
 RUN puppetserver gem install hiera-eyaml:"${HIERA_EYAML_VERSION}" --no-ri --no-rdoc
 
 # Install AWS SDK
-RUN gem install aws-sdk:"${AWS_SDK_VERSION}" --no-ri --no-rdoc
+RUN gem install aws-sdk:"${AWS_SDK_VERSION}" hiera-eyaml:"${HIERA_EYAML_VERSION}" --no-ri --no-rdoc
 
 # Copy config files
 COPY hiera.yaml /etc/puppetlabs/puppet/hiera.yaml
