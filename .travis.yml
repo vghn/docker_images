@@ -17,7 +17,7 @@ env:
   - IMAGE=wh MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/wh/U6IY-vaxZ2FZhFWxA3QKpUKGjeg='
 before_install:
 - sudo apt-get -qy update && sudo apt-get -qy -o Dpkg::Options::="--force-confdef"
-  -o Dpkg::Options::="--force-confold" install docker-engine
+  -o Dpkg::Options::="--force-confold" install docker-ce
 - docker --version
 install: bundle install --path vendor/bundle
 script:
