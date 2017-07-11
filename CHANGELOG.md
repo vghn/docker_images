@@ -1,5 +1,17 @@
 # Change Log
 
+## [v0.2.1](https://github.com/vghn/docker_images/tree/v0.2.1) (2017-07-11)
+[Full Changelog](https://github.com/vghn/docker_images/compare/v0.2.0...v0.2.1)
+
+**Implemented enhancements:**
+
+- Adhere to recommended community standards [\#107](https://github.com/vghn/docker_images/issues/107)
+- Add eyaml gem in puppet server cli [\#105](https://github.com/vghn/docker_images/issues/105)
+
+**Fixed bugs:**
+
+- Fix docker package name in TravisCI [\#106](https://github.com/vghn/docker_images/issues/106)
+
 ## [v0.2.0](https://github.com/vghn/docker_images/tree/v0.2.0) (2017-06-06)
 [Full Changelog](https://github.com/vghn/docker_images/compare/v0.1.1...v0.2.0)
 
