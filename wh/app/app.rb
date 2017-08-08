@@ -105,7 +105,7 @@ $stdout.sync = true
 initial_deployment unless settings.test?
 
 # Home
-get '/hooks' do
+get '/hooks/?' do
   'Nothing here! Yet!'
 end
 
