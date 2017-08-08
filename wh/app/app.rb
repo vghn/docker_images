@@ -105,24 +105,24 @@ $stdout.sync = true
 initial_deployment unless settings.test?
 
 # Home
-get '/' do
+get '/hooks' do
   'Nothing here! Yet!'
 end
 
 # Travis webhook
-post '/travis' do
+post '/hooks/travis' do
   payload = JSON.parse(params[:payload])
   verify_travis_signature(payload)
 
-  logger.info "Authorized request received from build ##{payload['number']} " \
-              "for the #{payload['branch']} branch " \
+  logger.info "Authorized request received from TravisCI build #" \
+              "#{payload['number']} for the #{payload['branch']} branch " \
               "of repository #{payload['repository']['name']}"
 
   deploy_r10k
 end
 
 # GitHub webhook
-post '/github' do
+post '/hooks/github' do
   request.body.rewind
   verify_github_signature(request.body.read)
   payload = JSON.parse(params[:payload])
@@ -130,11 +130,11 @@ post '/github' do
   logger.info 'Authorized request received from GitHub user ' \
               "@#{payload['sender']['login']}"
 
-  # not implemented yet
+  # nothing here yet
 end
 
 # Slack slash command
-post '/slack' do
+post '/hooks/slack' do
   token   = params.fetch('token').strip
   user    = params.fetch('user_name').strip
   channel = params.fetch('channel_name').strip
