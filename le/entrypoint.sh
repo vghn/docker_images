@@ -26,39 +26,46 @@ setup_cron(){
   ln -fs /entrypoint.sh /etc/periodic/daily/
 }
 
-# Create a basic web server
+# Create a basic web server, unless it is already started
 create_web_server(){
   local port="${1:-80}"
-  log "Creating http server port ${port}"
-  ( mkdir -p /tmp/www && cd /tmp/www && python -m SimpleHTTPServer "${port}")
+  if ! nc -z 127.0.0.1 "$port"; then
+    log 'Creating a simple HTTP server'
+    ( mkdir -p /tmp/www && cd /tmp/www && python -m SimpleHTTPServer "${port}" )
+  fi
 }
 
-# Wait for specified server to be listening
+# Wait for specified server to be listening on the specified port
 wait_for_server(){
   local server="${1:-localhost}"
   local port="${2:-80}"
   while ! nc -z "$server" "$port"; do
     log "${server}:${port} not up yet, waiting..."
-    sleep 1
+    sleep 5
   done
 }
 
-# Create a temporary certificate for HAProxy
+# Create a temporary certificate so that the webserver can start
 generate_temp_certificate(){
   if [[ ! -s "${LIVE_CERT_FOLDER}/temporary/fullchain.pem" ]]; then
     log 'Generating temporary SSL certificate'
     mkdir -p "${LIVE_CERT_FOLDER}/temporary"
-    openssl req -x509 -newkey rsa:1024 -keyout "${LIVE_CERT_FOLDER}/temporary/privkey.pem" -out "${LIVE_CERT_FOLDER}/temporary/fullchain.pem" -days 1 -nodes -subj '/CN=*/O=Temporary SSL Certificate/C=US'
+    openssl req -x509 \
+      -newkey rsa:1024 \
+      -keyout "${LIVE_CERT_FOLDER}/temporary/privkey.pem" \
+      -out "${LIVE_CERT_FOLDER}/temporary/fullchain.pem" \
+      -days 1 \
+      -nodes \
+      -subj '/CN=*/O=Temporary SSL Certificate/C=US'
   fi
 }
 
+# Create or renew certificates
+# Certificates are separated by semi-colon (;)
+# Domains on each certificate are separated by comma (,).
+# Ex: 'DOMAINS=foo.com,www.foo.com;bar.com,www.bar.com'
 update_certificates(){
-  # Certificates are separated by semi-colon (;)
-  # Domains on each certificate are separated by comma (,).
-  # Ex: DOMAINS=foo.com,www.foo.com;bar.com,www.bar.com
   IFS=';' read -r -a CERTS <<< "$DOMAINS"
-
-  # Create or renew certificates
   for DOMAINS in "${CERTS[@]}"; do
     log "Generating SSL certificates for ${DOMAINS}"
     eval certbot certonly \
@@ -82,7 +89,6 @@ main(){
   # Validate required environment variables.
   [[ -z "${DOMAINS+x}" ]] && MISSING="${MISSING} DOMAINS"
   [[ -z "${EMAIL+x}" ]] && MISSING="${MISSING} EMAIL"
-  [[ -z "${LOAD_BALANCER_SERVICE_NAME+x}" ]] && MISSING="${MISSING} LOAD_BALANCER_SERVICE_NAME"
 
   if [[ -n "${MISSING:-}" ]]; then
     log "Missing required environment variables: ${MISSING}"
@@ -92,15 +98,14 @@ main(){
   generate_temp_certificate
 
   setup_cron
-  (create_web_server 80) &
+  
+  create_web_server &
 
-  log 'Waiting for service SimpleHTTPServer'
   wait_for_server localhost
 
-  log "Waiting for service \"${LOAD_BALANCER_SERVICE_NAME}\""
-  wait_for_server "$LOAD_BALANCER_SERVICE_NAME"
+  IFS=',;' read -r -a SERVERS <<< "$DOMAINS"
+  wait_for_server "${SERVERS[0]}"
 
-  log "Loadbalancer service \"${LOAD_BALANCER_SERVICE_NAME}\" is online"
   update_certificates &
 
   exec "${@:-}"
