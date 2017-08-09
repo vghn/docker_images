@@ -26,11 +26,9 @@ Based on https://quay.io/repository/letsencrypt/letsencrypt and https://github.c
   certificate if you didn’t backup the ones already generated
 
 - `DOMAINS`: [required] a list of domains and subdomains. Certificates from different domains are separated by semi-colon (;) and subdomains are separated by comma (,).
-  Ex: DOMAINS=foo.com,www.foo.com;bar.com,www.bar.com
+  Ex: DOMAINS='foo.com,www.foo.com;bar.com,www.bar.com'
 
 - `EMAIL`: [required] the email address to be used for all certificates
-
-- `LOAD_BALANCER_SERVICE_NAME`: [required] used to wait for this service to be listening on port 80 before starting the certbot service.
 
 #### Packages:
 - bash
