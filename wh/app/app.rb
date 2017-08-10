@@ -11,8 +11,7 @@ require 'sinatra'
 require 'yaml'
 
 # VARs
-CONFIG            = ENV['API_CONFIG']
-R10K_SERVICE_NAME = ENV['R10K_SERVICE_NAME']
+CONFIG = ENV['API_CONFIG']
 
 # Logging
 def logger
@@ -25,11 +24,11 @@ def config
 end
 
 # Filter running containers by service label
-def container(label, service)
+def container(label, value)
   @container = Docker::Container.all(
     all: false,
     filters: {
-      label: ["#{label}=#{service}"]
+      label: ["#{label}=#{value}"]
     }.to_json
   )
 rescue Excon::Error::Socket
@@ -37,11 +36,11 @@ rescue Excon::Error::Socket
   return nil
 end
 
-# Deploy R10K in a separate thread
+# Deploy R10K in a separate thread (look for a container labeled with r10k)
 def deploy_r10k
   Thread.new do
     logger.info 'Deploying R10K environment'
-    container('com.docker.swarm.service.name', R10K_SERVICE_NAME).first
+    container('r10k', 'true').first
       .exec(['r10k', 'deploy', 'environment', '--puppetfile'])
   end
 end
