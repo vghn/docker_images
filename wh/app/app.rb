@@ -39,9 +39,19 @@ end
 # Deploy R10K in a separate thread (look for a container labeled with r10k)
 def deploy_r10k
   Thread.new do
-    logger.info 'Deploying R10K environment'
-    container('r10k', 'true').first
-      .exec(['r10k', 'deploy', 'environment', '--puppetfile'])
+    begin
+      logger.info 'Deploying R10K environment'
+      stdout, stderr, status = container('r10k', 'true').first
+        .exec(['r10k', 'deploy', 'environment', '--puppetfile'])
+      if status == 0
+        logger.info 'Deployment completed'
+      else
+        raise stdout.join(', ') unless stdout.empty?
+        raise stderr.join(', ') unless stderr.empty?
+      end
+    rescue => error
+      logger.warn "Deployment failed (#{error})!"
+    end
   end
 end
 
