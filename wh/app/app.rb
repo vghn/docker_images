@@ -12,7 +12,7 @@ require 'yaml'
 
 # VARs
 CONFIG            = ENV['API_CONFIG']
-R10K_SERVICE_NAME = 'vpm_r10k'
+R10K_SERVICE_NAME = ENV['R10K_SERVICE_NAME']
 
 # Logging
 def logger
