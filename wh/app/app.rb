@@ -187,5 +187,5 @@ end
 
 # Status
 get '/status' do
-  "Alive #{ENV['HOSTNAME']} (#{ENV['RACK_ENV']})"
+  return 200,  {:status => :success, :message => 'running' }.to_json
 end
