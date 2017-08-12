@@ -2,5 +2,5 @@
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 # Run classic app
-require 'app'
+require './app'
 run Sinatra::Application
