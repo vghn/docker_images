@@ -12,7 +12,7 @@ require 'aws-sdk'
 
 # Configure AWS SDK
 region = ENV['AWS_DEFAULT_REGION'] || 'us-east-1'
-Aws.config.update({region: region})
+Aws.config.update(region: region)
 
 # AWS EC2
 def ec2
@@ -21,95 +21,89 @@ end
 
 # Configuration
 def cfg
-  YAML.load_file(ENV['AUTOSIGN_CFG'])
-rescue => e
-  STDERR.puts "Could not load the configuration file (#{e.message})!"
-  return []
+  @cfg ||= YAML.load_file(ENV['AUTOSIGN_CFG'])
+rescue => error
+  STDERR.puts "Could not load the configuration file! (#{error.message})"
+  []
 end
 
 # Get a list of custom attributes
 def atts
   @csr.attributes
-end
-
-# Get challenge password
-def challenge_password
-  atts.select { |att| att.oid == 'challengePassword' }
-      .first.value.value.first.value.strip
-rescue => e
-  STDERR.puts "Could not find challengePassword in the attributes (#{e.message})!"
-  return nil
+rescue => error
+  STDERR.puts "Could not read the attributes! (#{error.message})"
+  []
 end
 
 # Get extensions
 def exts
   atts.select { |att| att.oid == 'extReq' }
       .first.value.value.first.value
-rescue => e
-  STDERR.puts "Could not find other extensions in the attributes! (#{e.message})!"
-  return []
+rescue => error
+  STDERR.puts 'Could not find other extensions in the attributes! ' \
+    "(#{error.message})"
+  []
+end
+
+# Read extension value
+def ext(oid, name)
+  exts.map do |ext|
+    if ext.value[0].value.strip == oid
+      ext.value[1].value.gsub(/([\x00-\x1f])/, '').strip
+    end
+  end.compact.first
+rescue => error
+  STDERR.puts "Could not find '#{name}' in the extension requets! " \
+    "(#{error.message})"
+  nil
+end
+
+# Get challenge password
+def challenge_password
+  atts.select { |att| att.oid == 'challengePassword' }
+      .first.value.value.first.value.strip
+rescue => error
+  STDERR.puts 'Could not find challengePassword in the custom attributes! ' \
+    "(#{error.message})"
+  nil
 end
 
 # Get instance
 def instance_id
-  exts
-    .map do |ext|
-      if ext.value[0].value.strip == '1.3.6.1.4.1.34380.1.1.2'
-        ext.value[1].value.gsub(/([\x00-\x1f])/, '').strip
-      end
-    end
-    .compact.first
+  ext('1.3.6.1.4.1.34380.1.1.2', 'pp_instance_id')
 end
 
 # Get image_name
 def image_name
-  exts
-    .map do |ext|
-      if ext.value[0].value.strip == '1.3.6.1.4.1.34380.1.1.3'
-        ext.value[1].value.gsub(/([\x00-\x1f])/, '').strip
-      end
-    end
-    .compact.first
+  ext('1.3.6.1.4.1.34380.1.1.3', 'pp_image_name')
 end
 
 # Get project
 def project
-  exts
-    .map do |ext|
-      if ext.value[0].value.strip == '1.3.6.1.4.1.34380.1.1.7'
-        ext.value[1].value.gsub(/([\x00-\x1f])/, '').strip
-      end
-    end
-    .compact.first
+  ext('1.3.6.1.4.1.34380.1.1.7', 'pp_project')
 end
 
 # Get role
 def role
-  exts
-    .map do |ext|
-      if ext.value[0].value.strip == '1.3.6.1.4.1.34380.1.1.13'
-        ext.value[1].value.gsub(/([\x00-\x1f])/, '').strip
-      end
-    end
-    .compact.first
+  ext('1.3.6.1.4.1.34380.1.1.13', 'pp_role')
 end
 
 # Get master password
 def master_password
   cfg['challengePassword']
-rescue => e
-  STDERR.puts 'Could not find \'challengePassword\' in the configuration' \
-       " (#{e.message})!"
-  return nil
+rescue => error
+  STDERR.puts 'Could not find \'challengePassword\' in the configuration! ' \
+       "(#{error.message})"
+  nil
 end
 
 # Get project authorized password
 def project_password
   cfg[project]['challengePassword']
-rescue => e
-  STDERR.puts 'Could not find challengePassword in the configuration for' \
-       " project '#{project}' (#{e.message})!"
-  return nil
+rescue => error
+  STDERR.puts 'Could not find challengePassword in the configuration for ' \
+       "project '#{project}'! (#{error.message})"
+  nil
 end
 
 # Sign if the master password matches
@@ -125,17 +119,17 @@ end
 # Sign if its a known instance
 def check_instances_list
   ec2.instances.map(&:id).include?(instance_id)
-rescue => e
-  STDERR.puts "Could not get a list of instances (#{e.message})!"
-  return false
+rescue => error
+  STDERR.puts "Could not get a list of instances (#{error.message})!"
+  false
 end
 
 # Sign if the base image is known
 def check_images_list
   ec2.images(owners: ['self']).map(&:id).include?(image_name)
-rescue => e
-  STDERR.puts "Could not get a list of images (#{e.message})!"
-  return false
+rescue => error
+  STDERR.puts "Could not get a list of images (#{error.message})!"
+  false
 end
 
 # Authorization
