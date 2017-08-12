@@ -1,5 +1,24 @@
 # Change Log
 
+## [v0.2.2](https://github.com/vghn/docker_images/tree/v0.2.2) (2017-08-12)
+[Full Changelog](https://github.com/vghn/docker_images/compare/v0.2.1...v0.2.2)
+
+**Implemented enhancements:**
+
+- WebHook status should return JSON [\#116](https://github.com/vghn/docker_images/issues/116)
+- Improve CSR Sign script in PuppetServer [\#115](https://github.com/vghn/docker_images/issues/115)
+- Improve gem groups [\#114](https://github.com/vghn/docker_images/issues/114)
+- Make trailing slash optional for webhook app [\#110](https://github.com/vghn/docker_images/issues/110)
+- Webhook app should use a separate path /hooks/\* [\#109](https://github.com/vghn/docker_images/issues/109)
+- Upgrade Alpine Linux [\#108](https://github.com/vghn/docker_images/issues/108)
+- Improve the webhook [\#117](https://github.com/vghn/docker_images/pull/117) ([vladgh](https://github.com/vladgh))
+- Improve the LetsEncrypt image [\#111](https://github.com/vghn/docker_images/pull/111) ([vladgh](https://github.com/vladgh))
+
+**Fixed bugs:**
+
+- Fix docker exec handling in the webhook image [\#113](https://github.com/vghn/docker_images/issues/113)
+- Remove hard coded service name from the webhook app [\#112](https://github.com/vghn/docker_images/issues/112)
+
 ## [v0.2.1](https://github.com/vghn/docker_images/tree/v0.2.1) (2017-07-11)
 [Full Changelog](https://github.com/vghn/docker_images/compare/v0.2.0...v0.2.1)
 
