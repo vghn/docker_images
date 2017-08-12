@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>GHN.me</title>
+    <style>
+      body {
+        background-color: #000000;
+        color: #FFF;
+        text-align: center;
+      }
+
+      a:link, a:visited, a:active, a:hover {
+        color: #FFF;
+      }
+
+      #centered {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 640px;
+        height: 320px;
+        margin-top: -180px;
+        margin-left: -320px;
+      }
+    </style>
+  </head>
+  <body>
+    <%= yield %>
+  </body>
+</html>

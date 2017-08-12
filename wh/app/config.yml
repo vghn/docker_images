@@ -1,0 +1,4 @@
+user: admin
+pass: changeme
+github_secret: changeme
+slack_token: changeme
