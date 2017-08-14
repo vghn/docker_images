@@ -9,7 +9,8 @@ describe 'Dockerfile' do
     it { is_expected.to be_installed.by('gem') }
   end
 
-  describe command('puppetserver gem list') do
-    its(:stdout) { is_expected.to match(/hiera-eyaml/) }
+  describe file('/usr/local/bin/csr-sign') do
+    it { is_expected.to exist }
+    it { is_expected.to be_executable }
   end
 end
