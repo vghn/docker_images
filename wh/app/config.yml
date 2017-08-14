@@ -1,4 +1,11 @@
+# HTTP Authorization
 user: admin
 pass: changeme
+
+# GitHub
 github_secret: changeme
+
+# Slack
 slack_token: changeme
+slack_deploy_users:
+  - 'me'

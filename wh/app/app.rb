@@ -101,9 +101,14 @@ post '/hooks/slack' do
   when '/rhea'
     case text
     when 'deploy'
-      # Only use the threaded deployment because of the short timeout
-      deploy_r10k
-      'R10K will deploy in the background :thumbsup:'
+      # Restrict to specific users
+      if config['slack_deploy_users'].include? user
+        # Only use the threaded deployment because of the short timeout
+        deploy_r10k
+        'R10K will deploy in the background :thumbsup:'
+      else
+        "You are not allowed to deploy R10K :thumbsdown:"
+      end
     else
       "I don't understand '#{text}' :cry:"
     end
