@@ -5,7 +5,7 @@ DOCKER_IMAGE_DIRECTORY = File.dirname(File.dirname(__FILE__))
 describe 'Dockerfile' do
   include Vtasks::Utils::DockerSharedContext::Container
 
-  describe package('aws-sdk') do
+  describe package('aws-sdk-ec2') do
     it { is_expected.to be_installed.by('gem') }
   end
 
