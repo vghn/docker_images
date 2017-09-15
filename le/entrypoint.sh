@@ -65,7 +65,7 @@ generate_temp_certificate(){
 # Domains on each certificate are separated by comma (,).
 # Ex: 'DOMAINS=foo.com,www.foo.com;bar.com,www.bar.com'
 update_certificates(){
-  IFS=';' read -r -a CERTS <<< "$DOMAINS"
+  IFS=';' read -ra CERTS <<< "$DOMAINS"
   for DOMAINS in "${CERTS[@]}"; do
     log "Generating SSL certificates for ${DOMAINS}"
     eval certbot certonly \
@@ -98,12 +98,12 @@ main(){
   generate_temp_certificate
 
   setup_cron
-  
-  create_web_server &
+
+  create_web_server 80 &
 
   wait_for_server localhost
 
-  IFS=',;' read -r -a SERVERS <<< "$DOMAINS"
+  IFS=',;' read -ra SERVERS <<< "$DOMAINS"
   wait_for_server "${SERVERS[0]}"
 
   update_certificates &
