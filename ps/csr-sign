@@ -4,7 +4,7 @@
 
 require 'yaml'
 require 'openssl'
-require 'aws-sdk'
+require 'aws-sdk-ec2'
 
 # Read CSR
 @cert = ARGV[0]
