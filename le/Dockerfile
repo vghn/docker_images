@@ -2,20 +2,16 @@ FROM alpine:3.7
 MAINTAINER Vlad Ghinea vlad@ghn.me
 
 # Install packages
-RUN apk --no-cache add bash certbot openssl tini
+RUN apk --no-cache add bash certbot openssl py2-future tini
 
-# Ports
-EXPOSE 80
-
-# Sets the HAProxy parameters to ensure this container
-# handles letsencrypt traffic
-ENV VIRTUAL_HOST="*/.well-known/acme-challenge/*"
-ENV VIRTUAL_HOST_WEIGHT="999"
+# Install pip packages
+RUN apk --no-cache add --virtual build-dependencies py-pip && \
+    pip --no-cache-dir install certbot-dns-cloudflare && \
+    apk del build-dependencies
 
 # Entrypoint
 COPY entrypoint.sh /
 ENTRYPOINT ["/sbin/tini", "--", "/entrypoint.sh"]
-CMD ["crond", "-f", "-l", "6"]
 
 # Metadata params
 ARG VERSION

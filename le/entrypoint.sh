@@ -6,7 +6,12 @@ IFS=$'\n\t'
 
 # VARs
 LIVE_CERT_FOLDER="${LIVE_CERT_FOLDER:-/etc/letsencrypt/live}"
-OPTIONS="${OPTIONS:-}"
+CERTBOT_EXTRA_OPTIONS="${CERTBOT_EXTRA_OPTIONS:-}"
+CRONJOB="${CRONJOB:-true}"
+GENERATE_TEMP_CERTIFICATE="${GENERATE_TEMP_CERTIFICATE:-false}"
+PREFERRED_CHALLENGE="${PREFERRED_CHALLENGE:-http}"
+CLOUDFLARE_EMAIL="${CLOUDFLARE_EMAIL:-}"
+CLOUDFLARE_API_KEY="${CLOUDFLARE_API_KEY:-}"
 
 # Log message
 log(){
@@ -15,15 +20,20 @@ log(){
 
 # Trap exit
 bye(){
-  log 'Exit detected; trying to clean up'
-  clean_up; exit "${1:-0}"
+  if [[ "$EXCODE" != 0 ]]; then
+    log 'Exit detected!' 1>&2
+  fi
+  exit "$EXCODE"
 }
 
 # Install cron
-setup_cron(){
-  # make sure we update certificates daily
-  log 'Installing daily tasks'
-  ln -fs /entrypoint.sh /etc/periodic/daily/
+run_cron(){
+  # Make sure we update certificates daily
+  ln -fs /entrypoint.sh /etc/periodic/15min/
+
+  # Run cron daemon
+  log 'Run daily tasks'
+  crond -f -l 6
 }
 
 # Create a basic web server, unless it is already started
@@ -60,14 +70,14 @@ generate_temp_certificate(){
   fi
 }
 
-# Create or renew certificates
+# Create or renew certificates (using webroot)
 # Certificates are separated by semi-colon (;)
 # Domains on each certificate are separated by comma (,).
 # Ex: 'DOMAINS=foo.com,www.foo.com;bar.com,www.bar.com'
-update_certificates(){
+update_certificates_webroot(){
   IFS=';' read -ra CERTS <<< "$DOMAINS"
   for DOMAINS in "${CERTS[@]}"; do
-    log "Generating SSL certificates for ${DOMAINS}"
+    log "Generating SSL certificates for ${DOMAINS} (using webroot)"
     eval certbot certonly \
       --domains "$DOMAINS" \
       --email "$EMAIL" \
@@ -78,13 +88,69 @@ update_certificates(){
       --text \
       --webroot \
       --webroot-path /tmp/www \
-      "$OPTIONS" || true
+      "$CERTBOT_EXTRA_OPTIONS" || true
   done
+}
+
+# Create or renew certificates (using the dns-cloudflare plugin)
+# Certificates are separated by semi-colon (;)
+# Domains on each certificate are separated by comma (,).
+# Ex: 'DOMAINS=foo.com,www.foo.com;bar.com,www.bar.com'
+update_certificates_dns_cloudflare() {
+  IFS=';' read -ra CERTS <<< "$DOMAINS"
+  for DOMAINS in "${CERTS[@]}"; do
+    log "Generating SSL certificates for ${DOMAINS} (using dns)"
+    eval certbot certonly \
+      --domains "$DOMAINS" \
+      --email "$EMAIL" \
+      --expand \
+      --agree-tos \
+      --rsa-key-size 4096 \
+      --non-interactive \
+      --text \
+      --dns-cloudflare \
+      --dns-cloudflare-credentials "$CLOUDFLARE_CREDENTIALS" \
+      "$CERTBOT_EXTRA_OPTIONS" || true
+  done
+}
+
+# The HTTP challenge logic
+http_challenge() {
+  if [[ "$GENERATE_TEMP_CERTIFICATE" == 'true' ]]; then
+    generate_temp_certificate
+  fi
+
+  create_web_server 80 &
+  wait_for_server localhost
+
+  IFS=',;' read -ra SERVERS <<< "$DOMAINS"
+  wait_for_server "${SERVERS[0]}"
+
+  update_certificates_webroot
+}
+
+# The DNS challenge logic
+cloudflare_challenge() {
+  # Prepare credentials
+  if [[ -n "${CLOUDFLARE_EMAIL}" ]] && [[ -n "${CLOUDFLARE_API_KEY}" ]]; then
+    CLOUDFLARE_CREDENTIALS='/tmp/cloudflare_credentials.ini'
+    echo "dns_cloudflare_email = ${CLOUDFLARE_EMAIL}" > "$CLOUDFLARE_CREDENTIALS"
+    echo "dns_cloudflare_api_key = ${CLOUDFLARE_API_KEY}" >> "$CLOUDFLARE_CREDENTIALS"
+  elif [[ -s /run/secrets/cloudflare_credentials.ini ]]; then
+    CLOUDFLARE_CREDENTIALS='/run/secrets/cloudflare_credentials.ini'
+  else
+    log 'The required credentials for Cloudflare are missing!'
+    exit 1
+  fi
+
+  chmod 600 "$CLOUDFLARE_CREDENTIALS"
+
+  update_certificates_dns_cloudflare
 }
 
 main(){
   # Trap exit
-  trap 'EXCODE=$?; bye; trap - EXIT; echo $EXCODE' EXIT HUP INT QUIT PIPE TERM
+  trap 'EXCODE=$?; bye; trap - EXIT; echo $EXCODE' EXIT INT TERM
 
   # Validate required environment variables.
   [[ -z "${DOMAINS+x}" ]] && MISSING="${MISSING} DOMAINS"
@@ -95,20 +161,27 @@ main(){
     exit 1
   fi
 
-  generate_temp_certificate
+  # Auto-detect challenges
+  if [[ -n "${CLOUDFLARE_EMAIL}" ]] && [[ -n "${CLOUDFLARE_API_KEY}" ]]; then
+    PREFERRED_CHALLENGE='cloudflare'
+  fi
 
-  setup_cron
+  # Challenges
+  case "$PREFERRED_CHALLENGE" in
+    http)
+      http_challenge
+      ;;
+    cloudflare)
+      cloudflare_challenge
+      ;;
+    *)
+      log "The '${PREFERRED_CHALLENGE}' authentication method is not supported yet!"; exit 1
+      ;;
+  esac
 
-  create_web_server 80 &
-
-  wait_for_server localhost
-
-  IFS=',;' read -ra SERVERS <<< "$DOMAINS"
-  wait_for_server "${SERVERS[0]}"
-
-  update_certificates &
-
-  exec "${@:-}"
+  if [[ "$CRONJOB" == 'true' ]]; then
+    run_cron
+  fi
 }
 
 main "${@:-}"
