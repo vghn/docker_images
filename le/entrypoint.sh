@@ -29,11 +29,11 @@ bye(){
 # Install cron
 run_cron(){
   # Make sure we update certificates daily
-  ln -fs /entrypoint.sh /etc/periodic/15min/
+  ln -fs /entrypoint.sh /etc/periodic/daily/
 
   # Run cron daemon
   log 'Run daily tasks'
-  crond -f -l 6
+  exec crond -l 6 -f
 }
 
 # Create a basic web server, unless it is already started
@@ -180,7 +180,7 @@ main(){
   esac
 
   if [[ "$CRONJOB" == 'true' ]]; then
-    run_cron
+    pgrep crond >/dev/null || run_cron
   fi
 }
 
