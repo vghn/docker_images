@@ -15,6 +15,13 @@ Based on https://hub.docker.com/r/dockercloud/haproxy/ and https://github.com/cn
 - `LIVE_CERT_FOLDER`: the live certificates folder, which is monitored for changes (defaults to `/etc/letsencrypt/live`)
 - `IGNORE_SECS`: number of seconds to ignore changes in order to avoid multiple restarts (defaults to `10`)
 
+#### Note
+Set the following environment variables on the letsencrypt container to ensure that it handles letsencrypt traffic
+```
+VIRTUAL_HOST="*/.well-known/acme-challenge/*"
+VIRTUAL_HOST_WEIGHT="999"
+```
+
 #### Packages:
 - bash
 - inotify-tools
