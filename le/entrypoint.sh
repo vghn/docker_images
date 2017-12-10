@@ -28,8 +28,8 @@ bye(){
 
 # Install cron
 run_cron(){
-  # Make sure we update certificates daily
-  ln -fs /entrypoint.sh /etc/periodic/daily/
+  # Make sure we update certificates daily (and remove the .sh for cron to run)
+  ln -fs /entrypoint.sh /etc/periodic/daily/letsencrypt
 
   # Run cron daemon
   log 'Run daily tasks'
