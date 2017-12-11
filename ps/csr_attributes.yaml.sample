@@ -1,0 +1,8 @@
+custom_attributes:
+  challengePassword: myVeryLongPassword
+extension_requests:
+  pp_role: myRole
+  pp_project: myProject
+  pp_application: myApplication
+  pp_instance_id: i-12345678
+  pp_image_name: ami-12345678

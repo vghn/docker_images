@@ -1,0 +1,11 @@
+---
+# Certificate Authority
+
+# Master Password
+challengePassword: 'myVeryLongPassword'
+
+# Project Passwords
+myProject:
+  challengePassword: 'myProjectPassword'
+other_project:
+  challengePassword: 'myOtherProjectPassword'

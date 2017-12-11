@@ -21,7 +21,7 @@ end
 
 # Configuration
 def cfg
-  @cfg ||= YAML.load_file(ENV['AUTOSIGN_CFG'])
+  @cfg ||= YAML.load_file(ENV['AUTOSIGN_CFG'] || 'csr_config.yaml')
 rescue => error
   STDERR.puts "Could not load the configuration file! (#{error.message})"
   []
