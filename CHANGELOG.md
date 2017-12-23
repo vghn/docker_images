@@ -1,5 +1,22 @@
 # Change Log
 
+## [v0.3.0](https://github.com/vghn/docker_images/tree/v0.3.0) (2017-12-23)
+[Full Changelog](https://github.com/vghn/docker_images/compare/v0.2.2...v0.3.0)
+
+**Implemented enhancements:**
+
+- Add a Logspout image with VladGhCARoot [\#125](https://github.com/vghn/docker_images/issues/125)
+- Add a sample for CSR config and attributes file [\#124](https://github.com/vghn/docker_images/issues/124)
+- Allow LetsEncrypt to use the Cloudflare DNS for authentication [\#122](https://github.com/vghn/docker_images/issues/122)
+- Upgrade to the new Modularized AWS SDK for Ruby \(Version 3\) [\#120](https://github.com/vghn/docker_images/issues/120)
+- Restrict Slack users access to the deployment command [\#119](https://github.com/vghn/docker_images/issues/119)
+- Hiera Eyaml is now in the Puppet Server base image [\#118](https://github.com/vghn/docker_images/issues/118)
+- Switch to new Bundler file names [\#121](https://github.com/vghn/docker_images/pull/121) ([vladgh](https://github.com/vladgh))
+
+**Fixed bugs:**
+
+- Remove .sh from the /etc/periodic scripts [\#123](https://github.com/vghn/docker_images/issues/123)
+
 ## [v0.2.2](https://github.com/vghn/docker_images/tree/v0.2.2) (2017-08-12)
 [Full Changelog](https://github.com/vghn/docker_images/compare/v0.2.1...v0.2.2)
 
