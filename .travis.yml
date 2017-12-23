@@ -15,6 +15,7 @@ env:
   - IMAGE=le MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/le/4wI8LWxfyozselpKPwWadjnUhLU='
   - IMAGE=ps MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/ps/mEg-V3l12ZnWx1gOq3ZmPBz-5hE='
   - IMAGE=wh MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/wh/U6IY-vaxZ2FZhFWxA3QKpUKGjeg='
+  - IMAGE=wh MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/ls/5GkpvX_kQE7O0SbMIOr8oRAIjF0='
 before_install:
 - sudo apt-get -qy update && sudo apt-get -qy -o Dpkg::Options::="--force-confdef"
   -o Dpkg::Options::="--force-confold" install docker-ce
