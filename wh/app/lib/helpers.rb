@@ -35,7 +35,7 @@ module Helpers
         stdout, stderr, status = container('r10k', 'true').first
           .exec(['r10k', 'deploy', 'environment', '--puppetfile'])
         if status == 0
-          message = 'Deployment completed'
+          message = 'Deployment completed :thumbsup:'
           logger.info message
           notifier.ping message
         else
@@ -43,7 +43,7 @@ module Helpers
           raise stderr.join(', ') unless stderr.empty?
         end
       rescue => error
-        msg = "Deployment failed (#{error})!"
+        message = "Deployment failed (#{error})! :cry:"
         logger.warn message
         notifier.ping message
       end
