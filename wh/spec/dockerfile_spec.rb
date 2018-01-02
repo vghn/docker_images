@@ -16,7 +16,7 @@ describe 'Dockerfile' do
     end
   end
 
-  gems = %w(docker-api faraday json puma sinatra)
+  gems = %w(docker-api faraday json puma sinatra slack-notifier)
   gems.each do |pkg|
     describe package(pkg) do
       it { is_expected.to be_installed.by('gem') }

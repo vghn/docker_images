@@ -7,6 +7,7 @@ gem 'puma', require: false
 gem 'rack', require: false
 gem 'rake', require: false
 gem 'sinatra', require: false
+gem 'slack-notifier', require: false
 
 group :development do
   gem 'rack-test', require: false

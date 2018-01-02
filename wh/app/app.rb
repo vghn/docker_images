@@ -8,6 +8,7 @@ require 'logger'
 require 'openssl'
 require 'rack'
 require 'sinatra'
+require 'slack-notifier'
 require 'yaml'
 
 # VARs

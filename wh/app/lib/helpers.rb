@@ -9,6 +9,11 @@ module Helpers
     @config ||= YAML.load_file(CONFIG)
   end
 
+  # Slack Notifier
+  def notifier
+    @notifier ||= Slack::Notifier.new config['slack_webhook']
+  end
+
   # Filter running containers by service label
   def container(label, value)
     @container = Docker::Container.all(
@@ -30,13 +35,17 @@ module Helpers
         stdout, stderr, status = container('r10k', 'true').first
           .exec(['r10k', 'deploy', 'environment', '--puppetfile'])
         if status == 0
-          logger.info 'Deployment completed'
+          message = 'Deployment completed'
+          logger.info message
+          notifier.ping message
         else
           raise stdout.join(', ') unless stdout.empty?
           raise stderr.join(', ') unless stderr.empty?
         end
       rescue => error
-        logger.warn "Deployment failed (#{error})!"
+        msg = "Deployment failed (#{error})!"
+        logger.warn message
+        notifier.ping message
       end
     end
   end

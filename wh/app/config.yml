@@ -7,5 +7,6 @@ github_secret: changeme
 
 # Slack
 slack_token: changeme
+slack_webhook: 'https://hooks.slack.com/services/XXX/YYY/ZZZ'
 slack_deploy_users:
   - 'me'
