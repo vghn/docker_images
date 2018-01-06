@@ -129,6 +129,15 @@ http_challenge() {
   update_certificates_webroot
 }
 
+dns_challenge(){
+  # Auto-detect challenges
+  if ( [[ -n "${CLOUDFLARE_EMAIL}" ]] && [[ -n "${CLOUDFLARE_API_KEY}" ]] ) || \
+     [[ -s /run/secrets/cloudflare_credentials.ini ]]
+  then
+    cloudflare_challenge
+  fi
+}
+
 # The DNS challenge logic
 cloudflare_challenge() {
   # Prepare credentials
@@ -161,18 +170,13 @@ main(){
     exit 1
   fi
 
-  # Auto-detect challenges
-  if [[ -n "${CLOUDFLARE_EMAIL}" ]] && [[ -n "${CLOUDFLARE_API_KEY}" ]]; then
-    PREFERRED_CHALLENGE='cloudflare'
-  fi
-
   # Challenges
   case "$PREFERRED_CHALLENGE" in
     http)
       http_challenge
       ;;
-    cloudflare)
-      cloudflare_challenge
+    dns)
+      dns_challenge
       ;;
     *)
       log "The '${PREFERRED_CHALLENGE}' authentication method is not supported yet!"; exit 1

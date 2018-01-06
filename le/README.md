@@ -38,19 +38,19 @@ Based on https://quay.io/repository/letsencrypt/letsencrypt and https://github.c
 
 - `GENERATE_TEMP_CERTIFICATE`: useful if the certbot server is behind a load balancer and a certificate is required for it to start. A temporary self signed certificate will be created and used until the challenge is authenticated (defaults to `false`)
 
-- `PREFERRED_CHALLENGE`: the preferred authentication method (defaults to `http`); possible values: `http`, `cloudflare`; if the API keys bellow are present it will try to autodetect it
+- `PREFERRED_CHALLENGE`: the preferred authentication method (defaults to `http`); possible values: `http`, `dns`; for `dns` the script will try to autodetect based on the API keys present bellow.
 
-- `CLOUDFLARE_EMAIL`: the email address to be used for dns authentication
+  - CLOUDFLARE:
+    - `CLOUDFLARE_EMAIL`: the email address to be used for dns authentication
+    - `CLOUDFLARE_API_KEY`: the Cloudflare Global API Key
 
-- `CLOUDFLARE_API_KEY`: the Cloudflare Global API Key
+    For docker swarm you can also use a secret called `cloudflare_credentials.ini` which contains the email and api key, in the following format:
 
-  Or a docker swarm secret called `cloudflare_credentials.ini` which contains the email and api key, in the following format:
-
-  ```
-  # Cloudflare API credentials used by Certbot
-  dns_cloudflare_email = cloudflare@example.com
-  dns_cloudflare_api_key = 0123456789abcdef0123456789abcdef01234567
-  ```
+      ```
+      # Cloudflare API credentials used by Certbot
+      dns_cloudflare_email = cloudflare@example.com
+      dns_cloudflare_api_key = 0123456789abcdef0123456789abcdef01234567
+      ```
 
 #### Packages:
 - bash
