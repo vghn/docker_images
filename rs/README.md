@@ -1,4 +1,5 @@
-# RSysLog ([Dockerfile](https://github.com/vladgh/docker_images/tree/master/rs))
+# Vlad's RSysLog
+
 [![](https://images.microbadger.com/badges/image/vladgh/rs.svg)](https://microbadger.com/images/vladgh/rs "Get your own image badge on microbadger.com")
 [![](https://images.microbadger.com/badges/version/vladgh/rs.svg)](https://microbadger.com/images/vladgh/rs "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/commit/vladgh/rs.svg)](https://microbadger.com/images/vladgh/rs "Get your own commit badge on microbadger.com")
