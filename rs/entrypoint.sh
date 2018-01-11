@@ -61,7 +61,7 @@ read -r -d '' RSYSLOG_SERVER <<RSYSLOG_SERVER || true
 \$InputTCPServerRun ${SERVER_PORT}
 
 # Log all rsyslog messages to the console.
-syslog.*  action(type="omfile" file="/dev/console")
+syslog.*  :omstdout:
 
 # Separate logs by hostname
 template(name="dynaFile" type="string" string="${REMOTE_LOGS_PATH}/%HOSTNAME%.log")
