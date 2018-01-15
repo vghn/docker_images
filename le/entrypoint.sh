@@ -18,14 +18,6 @@ log(){
   echo "[$(date "+%Y-%m-%dT%H:%M:%S%z") - $(hostname)] ${*}"
 }
 
-# Trap exit
-bye(){
-  if [[ "$EXCODE" != 0 ]]; then
-    log 'Exit detected!' 1>&2
-  fi
-  exit "$EXCODE"
-}
-
 # Install cron
 run_cron(){
   # Make sure we update certificates daily (and remove the .sh for cron to run)
@@ -158,9 +150,6 @@ cloudflare_challenge() {
 }
 
 main(){
-  # Trap exit
-  trap 'EXCODE=$?; bye; trap - EXIT; echo $EXCODE' EXIT INT TERM
-
   # Validate required environment variables.
   [[ -z "${DOMAINS+x}" ]] && MISSING="${MISSING} DOMAINS"
   [[ -z "${EMAIL+x}" ]] && MISSING="${MISSING} EMAIL"
