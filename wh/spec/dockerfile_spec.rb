@@ -12,6 +12,10 @@ describe 'Dockerfile' do
     expect(@image.json["Config"]["Labels"].has_key?("maintainer"))
   end
 
+  it 'uses the correct OS' do
+    expect(os[:family]).to eq('alpine')
+  end
+
   packages = %w(ca-certificates curl openssl tini)
   packages.each do |pkg|
     describe package(pkg) do

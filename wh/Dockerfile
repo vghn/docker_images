@@ -5,7 +5,7 @@ MAINTAINER Vlad Ghinea vlad@ghn.me
 RUN apk --no-cache add ca-certificates curl openssl tini
 
 # Install gems
-COPY app/Gemfile /app/Gemfile
+COPY app/gems.rb /app/gems.rb
 RUN apk --no-cache add --virtual build-dependencies ruby-dev build-base && \
     cd /app && bundle install --without development && \
     apk del build-dependencies
