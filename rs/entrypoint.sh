@@ -72,21 +72,6 @@ input(
   type="imtcp"
   port="${SERVER_TCP_PORT}"
 )
-RSYSLOG_CONF
-
-# Generate RSysLog TLS configuration
-read -r -d '' RSYSLOG_TLS <<RSYSLOG_TLS || true
-#### RSYSLOG TLS ####
-RSYSLOG_TLS
-
-if [[ -s "$CA_CERT" ]] && [[ -s "$SERVER_CERT" ]] && [[ -s "$SERVER_KEY" ]]; then
-  RSYSLOG_CONF+=$'\n\n'
-  RSYSLOG_CONF+="$RSYSLOG_TLS"
-fi
-
-# Generate RSysLog Server configuration
-read -r -d '' RSYSLOG_SERVER <<RSYSLOG_SERVER || true
-#### RULES ####
 
 # Log all rsyslog messages to the console.
 syslog.*  :omstdout:
@@ -94,9 +79,7 @@ syslog.*  :omstdout:
 # Separate logs by hostname
 template(name="dynaFile" type="string" string="${REMOTE_LOGS_PATH}/%HOSTNAME%.log")
 *.* action(type="omfile" dynaFile="dynaFile")
-RSYSLOG_SERVER
-RSYSLOG_CONF+=$'\n\n'
-RSYSLOG_CONF+="$RSYSLOG_SERVER"
+RSYSLOG_CONF
 
 # Generate RSysLog Logz.io configuration
 file_env LOGZIO_TOKEN # Read env var or file
