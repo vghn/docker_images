@@ -10,7 +10,7 @@ IFS=$'\n\t'
 CA_CERT="${CA_CERT:-/etc/ssl/certs/ca-cert.pem}"
 SERVER_KEY="${SERVER_KEY:-/etc/ssl/certs/server-key.pem}"
 SERVER_CERT="${SERVER_CERT:-/etc/ssl/certs/server-cert.pem}"
-SERVER_PORT="${SERVER_PORT:-10514}"
+SERVER_TCP_PORT="${SERVER_PORT:-10514}"
 REMOTE_LOGS_PATH="${REMOTE_LOGS_PATH:-/logs/remote}"
 LOGZIO_TOKEN="${LOGZIO_TOKEN:-}"
 LOGZIO_TOKEN_FILE="${LOGZIO_TOKEN_FILE:-}"
@@ -42,35 +42,41 @@ mkdir -p /var/spool/rsyslog
 touch /var/log/messages
 
 # Generate RSysLog default configuration
-read -r -d '' RSYSLOG_CONF <<'RSYSLOG_CONF' || true
-# Input modules
-$ModLoad immark.so   # provide --MARK-- message capability
-$ModLoad imuxsock.so # provide local system logging (e.g. via logger command)
-$ModLoad imtcp       # provides TCP syslog reception
+read -r -d '' RSYSLOG_CONF <<RSYSLOG_CONF || true
+# Global configuration
+global(
+  processInternalMessages="on"
+  WorkDirectory="/var/spool/rsyslog"
+  defaultNetstreamDriver="gtls"
+  defaultNetstreamDriverCAFile="${CA_CERT}"
+  defaultNetstreamDriverCertFile="${SERVER_CERT}"
+  defaultNetstreamDriverKeyFile="${SERVER_KEY}"
+)
 
-# Output modules
-$ModLoad omstdout.so # provide messages to stdout
+# Provides support for local system logging (e.g. via logger command)
+module(load="imuxsock")
 
-# Setup disk assisted queues. An on-disk queue is created for this action.
-# If the remote host is down, messages are spooled to disk and sent when
-# it is up again.
-$WorkDirectory /var/spool/rsyslog # where to place spool files
-$ActionQueueFileName fwdRule1     # unique name prefix for spool files
-$ActionQueueMaxDiskSpace 1g       # 1gb space limit (use as much as possible)
-$ActionQueueSaveOnShutdown on     # save messages to disk on shutdown
-$ActionQueueType LinkedList       # run asynchronously
-$ActionResumeRetryCount -1        # infinite retries if host is down
+# Provides --MARK-- message capability
+module(load="immark")
+
+module(load="omstdout")
+
+# Provides TCP syslog reception
+module(
+  load="imtcp"
+  StreamDriver.Name="gtls"
+  StreamDriver.mode="1"
+  StreamDriver.AuthMode="anon"
+)
+input(
+  type="imtcp"
+  port="${SERVER_TCP_PORT}"
+)
 RSYSLOG_CONF
 
 # Generate RSysLog TLS configuration
 read -r -d '' RSYSLOG_TLS <<RSYSLOG_TLS || true
-# Rsyslog TLS
-\$DefaultNetstreamDriver gtls
-\$DefaultNetstreamDriverCAFile ${CA_CERT}
-\$DefaultNetstreamDriverCertFile ${SERVER_CERT}
-\$DefaultNetstreamDriverKeyFile ${SERVER_KEY}
-\$InputTCPServerStreamDriverAuthMode anon
-\$InputTCPServerStreamDriverMode 1
+#### RSYSLOG TLS ####
 RSYSLOG_TLS
 
 if [[ -s "$CA_CERT" ]] && [[ -s "$SERVER_CERT" ]] && [[ -s "$SERVER_KEY" ]]; then
@@ -80,8 +86,7 @@ fi
 
 # Generate RSysLog Server configuration
 read -r -d '' RSYSLOG_SERVER <<RSYSLOG_SERVER || true
-# TCP Syslog Server
-\$InputTCPServerRun ${SERVER_PORT}
+#### RULES ####
 
 # Log all rsyslog messages to the console.
 syslog.*  :omstdout:
@@ -98,7 +103,21 @@ file_env LOGZIO_TOKEN # Read env var or file
 read -r -d '' LOGZIO <<LOGZIO || true
 # Logz.io
 template(name="logzioFormat" type="string" string="[${LOGZIO_TOKEN}] <%pri%>%protocol-version% %timestamp:::date-rfc3339% %HOSTNAME% %app-name% %procid% %msgid% [type=syslog] %msg%\\n")
-*.* action(type="omfwd" Protocol="tcp" Target="listener.logz.io" Port="5001" StreamDriverMode="1" StreamDriver="gtls" StreamDriverAuthMode="x509/name" StreamDriverPermittedPeers="*.logz.io" template="logzioFormat")
+*.* action(
+  type="omfwd"
+  Protocol="tcp"
+  Target="listener.logz.io"
+  Port="5001"
+  StreamDriverMode="1"
+  StreamDriver="gtls"
+  StreamDriverAuthMode="x509/name"
+  StreamDriverPermittedPeers="*.logz.io"
+  template="logzioFormat"
+  queue.filename="fwdRule1"
+  queue.maxdiskspace="1g"
+  queue.saveonshutdown="on"
+  queue.type="LinkedList"
+)
 LOGZIO
 if [[ -n "$LOGZIO_TOKEN" ]] && [[ -s "$CA_CERT" ]]; then
   RSYSLOG_CONF+=$'\n\n'

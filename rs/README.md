@@ -12,7 +12,7 @@ Vlad's central RSysLog server.
 - `CA_CERT`: the path to the CA certificate (defaults to `/etc/ssl/certs/ca-cert.pem`)
 - `SERVER_KEY`: the path to the server key (defaults to `/etc/ssl/certs/server-key.pem`)
 - `SERVER_CERT`: the path to the server certificate (defaults to `/etc/ssl/certs/server-cert.pem`)
-- `SERVER_PORT`: the port on which the server listens for logs (defaults to `10514`)
+- `SERVER_TCP_PORT`: the port on which the server listens for logs (defaults to `10514`)
 - `REMOTE_LOGS_PATH`: the path for the remote logs storage (defaults to `/logs/remote`)
 - `LOGZIO_TOKEN`: Logz.io token (optional)
 - `TIME_ZONE`: sets the time zone (optional)
