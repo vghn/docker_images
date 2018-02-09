@@ -14,7 +14,9 @@ COPY csr-sign /usr/local/bin/csr-sign
 
 # Configure Puppet for Prometheus Reporter
 COPY prometheus.yaml /etc/puppetlabs/puppet/
-RUN puppet config set reports puppetdb,prometheus --section master
+RUN mkdir -p /var/lib/prometheus-dropzone && \
+    chown -R puppet:puppet /var/lib/prometheus-dropzone && \
+    puppet config set reports puppetdb,prometheus --section master
 
 # Metadata params
 ARG VERSION
