@@ -1,4 +1,0 @@
----
-# Configuration file for Prometheus Reporter
-# https://github.com/voxpupuli/puppet-prometheus_reporter
-textfile_directory: /var/lib/prometheus-dropzone
