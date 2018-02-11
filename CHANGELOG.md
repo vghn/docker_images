@@ -1,5 +1,24 @@
 # Change Log
 
+## [v0.3.1](https://github.com/vghn/docker_images/tree/v0.3.1) (2018-02-11)
+[Full Changelog](https://github.com/vghn/docker_images/compare/v0.3.0...v0.3.1)
+
+**Implemented enhancements:**
+
+- \[ps\] Start using Prometheus Reporter [\#135](https://github.com/vghn/docker_images/issues/135)
+- \[RS\] Improve entrypoint [\#134](https://github.com/vghn/docker_images/issues/134)
+- Improve tests [\#133](https://github.com/vghn/docker_images/issues/133)
+- \[rs\] Allow token from swarm secrets [\#132](https://github.com/vghn/docker_images/issues/132)
+- Use latest Travis CI [\#130](https://github.com/vghn/docker_images/issues/130)
+- \[rs\] Add RSysLog image [\#129](https://github.com/vghn/docker_images/issues/129)
+- \[wh\] Notify Slack on R10K deployments [\#127](https://github.com/vghn/docker_images/issues/127)
+- \[ls\] Add tests for the logspout image [\#126](https://github.com/vghn/docker_images/issues/126)
+
+**Fixed bugs:**
+
+- \[rs\] Own console is empty [\#131](https://github.com/vghn/docker_images/issues/131)
+- \[wh\] Fix message variable [\#128](https://github.com/vghn/docker_images/issues/128)
+
 ## [v0.3.0](https://github.com/vghn/docker_images/tree/v0.3.0) (2017-12-23)
 [Full Changelog](https://github.com/vghn/docker_images/compare/v0.2.2...v0.3.0)
 
