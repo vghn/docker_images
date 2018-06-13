@@ -1,5 +1,7 @@
 # Vlad's LetsEncrypt
 
+## ***Abandoned in favor of [Acme.sh](https://acme.sh)***
+
 [![Docker Layers](https://images.microbadger.com/badges/image/vladgh/le.svg)](http://microbadger.com/images/vladgh/le)
 [![Docker Version](https://images.microbadger.com/badges/version/vladgh/le.svg)](http://microbadger.com/images/vladgh/le)
 [![Docker Commit](https://images.microbadger.com/badges/commit/vladgh/le.svg)](http://microbadger.com/images/vladgh/le)
