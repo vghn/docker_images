@@ -10,9 +10,4 @@
 Based on https://hub.docker.com/r/vladgh/puppetserver/
 
 ### Changes:
-
-#### Environment variables:
-- `AWS_DEFAULT_REGION` defaults to `us-east-1'`
-
-#### Packages:
-- `aws-sdk` gem
+Adds the `aws-sdk-ec2` gem and a custom certificate signing script.
