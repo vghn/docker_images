@@ -14,6 +14,8 @@ SERVER_TCP_PORT="${SERVER_PORT:-10514}"
 REMOTE_LOGS_PATH="${REMOTE_LOGS_PATH:-/logs/remote}"
 LOGZIO_TOKEN="${LOGZIO_TOKEN:-}"
 LOGZIO_TOKEN_FILE="${LOGZIO_TOKEN_FILE:-}"
+TIME_ZONE="${TIME_ZONE:-}"
+TIME_SERVER="${TIME_SERVER:-'pool.ntp.org'}"
 
 # usage: file_env VAR [DEFAULT]
 #    ie: file_env 'XYZ_DB_PASSWORD' 'example'
@@ -113,13 +115,8 @@ if [[ -n "${TIME_ZONE:-}" ]]; then
   echo "$TIME_ZONE" > /etc/timezone
 fi
 
-# Configure timeserver if not provided
-if [[ -z "${TIME_SERVER:-}" ]]; then
-  TIME_SERVER='pool.ntp.org'
-fi
-
 # Update time
-ntpd -p "$TIME_SERVER" || true
+ntpd -q -p "$TIME_SERVER" || true
 
 # Remove previous PID file
 rm -f /var/run/rsyslogd.pid
