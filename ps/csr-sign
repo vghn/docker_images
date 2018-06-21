@@ -108,12 +108,12 @@ end
 
 # Sign if the master password matches
 def check_master_password
-  master_password && challenge_password == master_password
+  challenge_password == master_password
 end
 
 # Sign if the project password matches
 def check_project_password
-  project_password && challenge_password == project_password
+  challenge_password == project_password
 end
 
 # Sign if its a known instance
