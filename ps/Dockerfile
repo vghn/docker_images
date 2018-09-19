@@ -1,5 +1,5 @@
 FROM vladgh/puppetserverdb:latest
-MAINTAINER Vlad Ghinea vlad@ghn.me
+LABEL maintainer "Vlad Ghinea vlad@ghn.me"
 
 # Environment
 ENV AWS_DEFAULT_REGION='us-east-1' \

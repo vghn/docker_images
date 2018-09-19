@@ -1,5 +1,5 @@
 FROM alpine:3.7
-LABEL MAINTAINER Vlad Ghinea vlad@ghn.me
+LABEL maintainer "Vlad Ghinea vlad@ghn.me"
 
 # Install packages
 RUN apk --no-cache add bash certbot openssl py2-future tini

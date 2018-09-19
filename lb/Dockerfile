@@ -1,5 +1,5 @@
 FROM dockercloud/haproxy:1.6.7
-MAINTAINER Vlad Ghinea vlad@ghn.me
+LABEL maintainer "Vlad Ghinea vlad@ghn.me"
 
 # Install packages
 RUN apk --no-cache add bash inotify-tools tini
