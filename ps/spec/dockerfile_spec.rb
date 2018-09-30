@@ -16,6 +16,10 @@ describe 'Dockerfile' do
     it { is_expected.to be_installed.by('gem') }
   end
 
+  describe package('aws-sdk-ssm') do
+    it { is_expected.to be_installed.by('gem') }
+  end
+
   describe file('/usr/local/bin/csr-sign') do
     it { is_expected.to exist }
     it { is_expected.to be_executable }

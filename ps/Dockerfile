@@ -1,13 +1,16 @@
-FROM vladgh/puppetserverdb:latest
+FROM vladgh/puppetserver:latest
 LABEL maintainer "Vlad Ghinea vlad@ghn.me"
 
 # Environment
 ENV AWS_DEFAULT_REGION='us-east-1' \
     AWS_SDK_EC2_VERSION='~> 1' \
+    AWS_SDK_SSM_VERSION='~> 1' \
     AUTOSIGN='/usr/local/bin/csr-sign'
 
 # Install AWS SDK
-RUN gem install aws-sdk-ec2:"${AWS_SDK_EC2_VERSION}" --no-ri --no-rdoc
+RUN gem install --no-ri --no-rdoc \
+    aws-sdk-ec2:"${AWS_SDK_EC2_VERSION}" \
+    aws-sdk-ssm:"${AWS_SDK_SSM_VERSION}"
 
 # Copy configuration files
 COPY csr-sign /usr/local/bin/csr-sign

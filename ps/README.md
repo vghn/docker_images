@@ -7,7 +7,8 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/vladgh/ps.svg)](https://hub.docker.com/r/vladgh/ps)
 [![Build Status](https://travis-ci.org/vghn/docker_images.svg?branch=master)](https://travis-ci.org/vghn/docker_images)
 
-Based on https://hub.docker.com/r/vladgh/puppetserver/
+Based on <https://hub.docker.com/r/vladgh/puppetserver/>
 
-### Changes:
-Adds the `aws-sdk-ec2` gem and a custom certificate signing script.
+## Changes
+
+Adds the `aws-sdk-ec2` and `aws-sdk-ssm` gems and a custom certificate signing script.
