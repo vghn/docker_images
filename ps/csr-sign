@@ -14,7 +14,7 @@ require 'aws-sdk-ssm'
 
 # Configure AWS SDK
 region = ENV['AWS_DEFAULT_REGION'] || 'us-east-1'
-Aws.config.update(region: region, profile: 'orion')
+Aws.config.update(region: region)
 
 # Logging
 def logger
