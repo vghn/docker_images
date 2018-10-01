@@ -66,6 +66,7 @@ module(load="omstdout")
 # Provides TCP syslog reception
 module(
   load="imtcp"
+  MaxSessions="500"
   StreamDriver.Name="gtls"
   StreamDriver.mode="1"
   StreamDriver.AuthMode="anon"
