@@ -11,7 +11,7 @@ IFS=$'\n\t'
 
 # Load environment
 # shellcheck disable=1090
-. "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)/.env" || true
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/.env" || true
 
 # VARs
 GIT_TAG="$(git describe --always --tags)"
@@ -102,7 +102,7 @@ tag_image(){
 # Notify
 notify_microbadger(){
   # shellcheck disable=1090
-  . "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)/.microbadger"
+  . "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/.microbadger"
 
   local token="${MICROBADGER_TOKENS[${DOCKER_REPO}]:-}"
   local url="https://hooks.microbadger.com/images/${DOCKER_REPO}/${token}"
