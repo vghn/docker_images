@@ -1,5 +1,21 @@
 # Change Log
 
+## [v0.3.2](https://github.com/vghn/docker_images/tree/v0.3.2) (2018-10-03)
+[Full Changelog](https://github.com/vghn/docker_images/compare/v0.3.1...v0.3.2)
+
+**Implemented enhancements:**
+
+- Improve Docker release workflow [\#142](https://github.com/vghn/docker_images/issues/142)
+- \[rs\] Improve entrypoint to allow for certificates [\#141](https://github.com/vghn/docker_images/issues/141)
+- \[ps\] Allow SSM Parameter Store values in the CSR signing script [\#140](https://github.com/vghn/docker_images/issues/140)
+- Clean-up CSR script [\#139](https://github.com/vghn/docker_images/issues/139)
+- Mark unused images as abandoned and stop building them [\#137](https://github.com/vghn/docker_images/issues/137)
+
+**Fixed bugs:**
+
+- \[rs\] Do not daemonize NTP [\#138](https://github.com/vghn/docker_images/issues/138)
+- Fix docker login [\#136](https://github.com/vghn/docker_images/issues/136)
+
 ## [v0.3.1](https://github.com/vghn/docker_images/tree/v0.3.1) (2018-02-11)
 [Full Changelog](https://github.com/vghn/docker_images/compare/v0.3.0...v0.3.1)
 
