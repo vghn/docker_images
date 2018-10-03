@@ -73,6 +73,7 @@ build_image(){
 push_image(){
   echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
   echo "Pushing ${IMAGE_NAME}"
+  docker push "${DOCKER_REPO}:latest"
   docker push "${IMAGE_NAME}"
 }
 
