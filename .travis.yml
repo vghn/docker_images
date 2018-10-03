@@ -19,16 +19,7 @@ install:
   curl -fsSL https://goss.rocks/install | sh
   goss -version
 script:
-- . shlib/docker.sh && build_image || true
-- . shlib/docker.sh && test_image
-- |
-  . shlib/docker.sh
-  if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]; then
-    push_image
-  elif [[ "$TRAVIS_TAG" =~ ^v[0-9]+ ]]; then
-    tag_image
-  fi
-  notify_microbadger
+- echo debug
 notifications:
   webhooks:
     urls: https://vbot.ghn.me/travis
