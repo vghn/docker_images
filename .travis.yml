@@ -19,7 +19,7 @@ install:
   curl -fsSL https://goss.rocks/install | sh
   goss -version
 script:
-- . shlib/docker.sh && build_image
+- . shlib/docker.sh && build_image || true
 - . shlib/docker.sh && test_image
 - |
   . shlib/docker.sh
