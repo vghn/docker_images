@@ -21,12 +21,8 @@ install:
 script:
 - ./docker.sh build
 - ./docker.sh test
-- |
-  if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]; then
-    ./docker.sh push
-  elif [[ "$TRAVIS_TAG" =~ ^v[0-9]+ ]]; then
-    ./docker.sh tag
-  fi
+- if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./docker.sh push; fi
+- if [[ "$TRAVIS_TAG" =~ ^v[0-9]+ ]]; then ./docker.sh push && ./docker.sh tag; fi
 - ./docker.sh notify
 notifications:
   webhooks:
