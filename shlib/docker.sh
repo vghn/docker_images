@@ -11,14 +11,14 @@ IFS=$'\n\t'
 
 # Load environment
 # shellcheck disable=1090
-. "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)/.env"
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)/.env" || true
 
 # VARs
 GIT_TAG="$(git describe --always --tags)"
 BUILD_PATH="${BUILD_PATH:-.}"
 DOCKERFILE_PATH="${DOCKERFILE_PATH:-Dockerfile}"
-DOCKER_PASSWORD="${DOCKER_PASSWORD:-}"
 DOCKER_USERNAME="${DOCKER_USERNAME:-}"
+DOCKER_PASSWORD="${DOCKER_PASSWORD:-}"
 DOCKER_REPO="${DOCKER_REPO:-}"
 DOCKER_TAG="${DOCKER_TAG:-${GIT_TAG}}"
 IMAGE_NAME="${IMAGE_NAME:-${DOCKER_REPO}:${DOCKER_TAG}}"
@@ -75,11 +75,10 @@ build_image(){
 
 # Push
 push_image(){
-  echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
+  echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
   echo "Pushing ${IMAGE_NAME}"
   docker push "${IMAGE_NAME}"
 }
-
 
 # Tag image
 # This creates semantic version style tags from latest (built just once).
