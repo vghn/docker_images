@@ -27,7 +27,7 @@ script:
   elif [[ "$TRAVIS_TAG" =~ ^v[0-9]+ ]]; then
     ./docker.sh tag
   fi
-  ./docker.sh notify
+- ./docker.sh notify
 notifications:
   webhooks:
     urls: https://vbot.ghn.me/travis
