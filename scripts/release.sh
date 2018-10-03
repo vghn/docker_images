@@ -25,7 +25,7 @@ git_clean_repo(){
   fi
 
   # Check if there are uncommitted changes
-  if ! git diff --quiet HEAD1; then
+  if ! git diff --quiet HEAD; then
     echo 'ERROR: Commit your changes first'
     return 1
   fi
@@ -104,9 +104,6 @@ main(){
     else
       echo 'Commit CHANGELOG'
       git commit --gpg-sign --message "Update change log for ${RELEASE}" CHANGELOG.md
-
-      echo 'Push changes'
-      git push
     fi
 
     echo "Tag  ${RELEASE}"
