@@ -1,35 +1,34 @@
 dist: trusty
 group: travis_latest
-language: ruby
 services: docker
-branches:
-  except:
-  - "/^v\\d/"
-cache:
-  directories:
-  - vendor/bundle
 env:
   global:
-  - DOCKER_REPOSITORY=vladgh
+  - DOCKER_NAMESPACE=vladgh
   matrix:
-  - IMAGE=ls MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/ls/5GkpvX_kQE7O0SbMIOr8oRAIjF0='
-  - IMAGE=ps MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/ps/mEg-V3l12ZnWx1gOq3ZmPBz-5hE='
-  - IMAGE=rs MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/rs/OpUlWk6bOCeUwyKDuYMbChRXAR8='
-  #- IMAGE=lb MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/lb/aYrA0-kryIhSzt0zvxo9pV33P94='
-  #- IMAGE=le MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/le/4wI8LWxfyozselpKPwWadjnUhLU='
-  #- IMAGE=wh MICROBADGER_WEBHOOK='https://hooks.microbadger.com/images/vladgh/wh/U6IY-vaxZ2FZhFWxA3QKpUKGjeg='
-before_install:
+  - BUILD_PATH=ls DOCKER_REPO=vladgh/ls
+  - BUILD_PATH=ps DOCKER_REPO=vladgh/ps
+  - BUILD_PATH=rs DOCKER_REPO=vladgh/rs
+install:
 - sudo apt-get -qy update && sudo apt-get -qy -o Dpkg::Options::="--force-confdef"
   -o Dpkg::Options::="--force-confold" install docker-ce
-- docker --version
-install: bundle install --without development --path vendor/bundle
+  docker --version
+- |
+  mkdir ~/bin
+  export PATH=$PATH:~/bin
+  export GOSS_DST=~/bin
+  curl -fsSL https://goss.rocks/install | sh
+  goss -version
 script:
-- bundle exec rake docker:${IMAGE}:build
-- bundle exec rake docker:${IMAGE}:spec
-- if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]; then
-  echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin;
-  bundle exec rake docker:${IMAGE}:push;
-  curl -X POST "$MICROBADGER_WEBHOOK"; fi
+- . shlib/docker.sh && build_image
+- . shlib/docker.sh && test_image
+- |
+  . shlib/docker.sh
+  if [[ "$TRAVIS_PULL_REQUEST" == "false" ]] && [[ "$TRAVIS_BRANCH" == "master" ]]; then
+    push_image
+  elif [[ "$TRAVIS_TAG" =~ ^v[0-9]+ ]]; then
+    tag_image
+  fi
+  notify_microbadger
 notifications:
   webhooks:
     urls: https://vbot.ghn.me/travis
