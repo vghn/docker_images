@@ -28,3 +28,19 @@ docker run -d \
   -v ./remote_logs:/logs/remote
   vladgh/rs
 ```
+
+Generate self-signed certificates (thanks to https://nacko.net/securing-your-syslog-server-with-tls-ssl-in-centos-6-rhel-6/)
+
+```
+# Create a new self-signed CA certificate.
+openssl genrsa -out ca-key.pem 2048
+openssl req -new -x509 -sha256 -nodes -days 3600 -subj '/C=US/ST=LA/L=New Orleans/O=VladGh/CN=VladGh CA Root/emailAddress=admin@vladgh.com' -key ca-key.pem -out ca-cert.pem
+
+# Create the request and sign it with our CA certificate
+openssl req -newkey rsa:2048 -sha256 -days 3600 -nodes -subj '/C=US/ST=LA/L=New Orleans/O=VladGh/CN=logs.ghn.me/emailAddress=admin@vladgh.com' -keyout server-key.pem -out server-req.pem
+openssl x509 -req -in server-req.pem -days 3600 -CA ca-cert.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem
+
+# Certificate info
+openssl x509 -text -in ca-cert.pem
+openssl x509 -text -in server-cert.pem
+```
