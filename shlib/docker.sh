@@ -117,3 +117,31 @@ test_image(){
   export PATH="${PATH}:~/bin"
   # TODO dgoss run ...
 }
+
+# Logic
+main(){
+  export cmd="${1:-}"; shift || true
+  case "$cmd" in
+    build)
+      build_image
+      ;;
+    push)
+      push_image
+      ;;
+    tag)
+      tag_image
+      ;;
+    notify)
+      notify_microbadger
+      ;;
+    test)
+      test_image
+      ;;
+    *)
+      echo "'${cmd}' command is not implemented"
+      ;;
+  esac
+}
+
+# Run
+main "${@:-}"
