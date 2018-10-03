@@ -94,7 +94,7 @@ main(){
 
   RELEASE="v${MAJOR}.${MINOR}.${PATCH}"
 
-  #git_clean_repo
+  git_clean_repo
 
   if [[ "$WRITE_CHANGELOG" == 'true' ]]; then
     eval "$GCG_CMD --future-release ${RELEASE}"
@@ -103,15 +103,15 @@ main(){
       echo 'CHANGELOG has not changed. Skipping...'
     else
       echo 'Commit CHANGELOG'
-      #git commit --gpg-sign --message "Update change log for ${RELEASE}" CHANGELOG.md
+      git commit --gpg-sign --message "Update change log for ${RELEASE}" CHANGELOG.md
 
       echo 'Push changes'
-      #git push
+      git push
     fi
 
     echo "Tag  ${RELEASE}"
-    #git tag --sign "${RELEASE}" --message "Release ${RELEASE}"
-    #git push --follow-tags
+    git tag --sign "${RELEASE}" --message "Release ${RELEASE}"
+    git push --follow-tags
   fi
 }
 
