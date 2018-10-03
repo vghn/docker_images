@@ -91,7 +91,7 @@ push_image(){
 #     Tag     /^v([0-9]+)\.([0-9]+)\.([0-9]+)$/     /           {\1}
 tag_image(){
   generate_semantic_version
-  run_push
+  push_image
 
   for version in "${major}.${minor}.${patch}" "${major}.${minor}" "${major}"; do
     echo "Pushing version (${DOCKER_REPO}:${version})"
