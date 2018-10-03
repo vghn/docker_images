@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Docker build functions
+# Docker script
 # https://docs.docker.com/docker-cloud/builds/advanced/
 
 # Bash strict mode
@@ -101,7 +101,7 @@ tag_image(){
 # Notify
 notify_microbadger(){
   # shellcheck disable=1090
-  . "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/.microbadger"
+  . "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)/.microbadger"
 
   local token="${MICROBADGER_TOKENS[${DOCKER_REPO}]:-}"
   local url="https://hooks.microbadger.com/images/${DOCKER_REPO}/${token}"
@@ -113,7 +113,7 @@ notify_microbadger(){
 
 # Tests
 test_image(){
-  export PATH="${PATH}:~/bin"
+  export PATH="$PATH":~/bin
   # TODO dgoss run ...
 }
 

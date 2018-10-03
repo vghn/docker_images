@@ -19,11 +19,11 @@ install:
   curl -fsSL https://goss.rocks/install | sh
   goss -version
 script:
-- ./docker.sh build
-- ./docker.sh test
-- if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./docker.sh push; fi
-- if [[ "$TRAVIS_TAG" =~ ^v[0-9]+ ]]; then ./docker.sh push && ./docker.sh tag; fi
-- ./docker.sh notify
+- ./scripts/docker.sh build
+- ./scripts/docker.sh test
+- if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./scripts/docker.sh push; fi
+- if [[ "$TRAVIS_TAG" =~ ^v[0-9]+ ]]; then ./scripts/docker.sh push && ./scripts/docker.sh tag; fi
+- ./scripts/docker.sh notify
 notifications:
   webhooks:
     urls: https://vbot.ghn.me/travis
