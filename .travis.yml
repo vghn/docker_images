@@ -19,7 +19,6 @@ install:
   curl -fsSL https://goss.rocks/install | sh
   goss -version
 script:
-- cat /home/travis/.travis/job_stages
 - . shlib/docker.sh && build_image
 - . shlib/docker.sh && test_image
 - |

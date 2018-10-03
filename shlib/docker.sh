@@ -71,6 +71,7 @@ build_image(){
     --tag "$IMAGE_NAME" \
     .
   )
+  echo after
 }
 
 # Push
