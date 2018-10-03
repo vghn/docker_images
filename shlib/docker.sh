@@ -75,9 +75,7 @@ build_image(){
 
 # Push
 push_image(){
-  echo 'before'
   echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-  echo 'after'
   echo "Pushing ${IMAGE_NAME}"
   docker push "${IMAGE_NAME}"
 }
