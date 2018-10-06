@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Release script
-# https://docs.docker.com/docker-cloud/builds/advanced/
 
 # Bash strict mode
 set -euo pipefail
@@ -14,21 +13,16 @@ GIT_TAG="$(git describe --always --tags)"
 WRITE_CHANGELOG="${WRITE_CHANGELOG:-false}"
 BUG_LABELS="${BUG_LABELS:-bug}"
 ENHANCEMENT_LABELS="${ENHANCEMENT_LABELS:-enhancement}"
-GCG_CMD="github_changelog_generator --bug-labels ${BUG_LABELS} --enhancement-labels ${ENHANCEMENT_LABELS}"
+
+# Check if command exists
+is_cmd() { command -v "$@" >/dev/null 2>&1 ;}
 
 # Check if the repository is clean
 git_clean_repo(){
-  # Check if there are untracked files
-  if [[ ! -z $(git ls-files --others --exclude-standard) ]]; then
-    echo 'ERROR: There are untracked files.'
-    return 1
-  fi
-
-  # Check if there are uncommitted changes
-  if ! git diff --quiet HEAD; then
+  git diff --quiet HEAD || (
     echo 'ERROR: Commit your changes first'
     return 1
-  fi
+  )
 }
 
 # Generate semantic version style tags
@@ -38,8 +32,6 @@ generate_semantic_version(){
     echo "Version (${GIT_TAG}) does not match semantic version; Skipping..."
     return
   fi
-
-  echo "Using version ${GIT_TAG}"
 
   # Break the version into components
   semver="${GIT_TAG#v}" # Remove the 'v' prefix
@@ -71,9 +63,22 @@ increment(){
   esac
 }
 
+# Generate log
+generate_log(){
+  GCG_CMD="--bug-labels ${BUG_LABELS} --enhancement-labels ${ENHANCEMENT_LABELS}"
+
+  if is_cmd github_changelog_generator; then
+    # If release is empty is the same as `unreleased`
+    eval "github_changelog_generator $GCG_CMD --future-release ${RELEASE:-}"
+  else
+    echo 'ERROR: github_changelog_generator is not installed!'
+    exit 1
+  fi
+}
+
 # logic
 main(){
-  case "${1:-patch}" in
+  case "${1:-}" in
     major)
       increment major
       ;;
@@ -84,32 +89,32 @@ main(){
       increment patch
       ;;
     unreleased)
-      eval "$GCG_CMD --unreleased"
-      exit
+      generate_log; exit 0
       ;;
     *)
-      increment patch
+      generate_log; exit 0
       ;;
   esac
 
-  RELEASE="v${MAJOR}.${MINOR}.${PATCH}"
+  if ! is_cmd git; then echo 'ERROR: Git is not installed!'; exit 1; fi
 
   git_clean_repo
 
+  RELEASE="v${MAJOR}.${MINOR}.${PATCH}"
+
   if [[ "$WRITE_CHANGELOG" == 'true' ]]; then
-    eval "$GCG_CMD --future-release ${RELEASE}"
+    generate_log
 
-    if git diff --quiet HEAD; then
-      echo 'CHANGELOG has not changed. Skipping...'
-    else
+    git diff --quiet HEAD || (
       echo 'Commit CHANGELOG'
+      git add CHANGELOG.md
       git commit --gpg-sign --message "Update change log for ${RELEASE}" CHANGELOG.md
-    fi
-
-    echo "Tag  ${RELEASE}"
-    git tag --sign "${RELEASE}" --message "Release ${RELEASE}"
-    git push --follow-tags
+    )
   fi
+
+  echo "Tag  ${RELEASE}"
+  git tag --sign "${RELEASE}" --message "Release ${RELEASE}"
+  git push --follow-tags
 }
 
 # Run

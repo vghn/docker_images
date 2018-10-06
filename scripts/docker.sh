@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Docker script
+# Docker scripts
 # https://docs.docker.com/docker-cloud/builds/advanced/
 
 # Bash strict mode
@@ -11,14 +11,13 @@ IFS=$'\n\t'
 
 # VARs
 GIT_TAG="$(git describe --always --tags)"
-BUILD_PATH="${BUILD_PATH:-.}"
+BUILD_PATH="${BUILD_PATH:-/}"
 DOCKERFILE_PATH="${DOCKERFILE_PATH:-Dockerfile}"
 DOCKER_USERNAME="${DOCKER_USERNAME:-}"
 DOCKER_PASSWORD="${DOCKER_PASSWORD:-}"
 DOCKER_REPO="${DOCKER_REPO:-}"
-DOCKER_TAG="${DOCKER_TAG:-${GIT_TAG}}"
+DOCKER_TAG="${DOCKER_TAG:-latest}"
 IMAGE_NAME="${IMAGE_NAME:-${DOCKER_REPO}:${DOCKER_TAG}}"
-MICROBADGER_WEBHOOK="${MICROBADGER_WEBHOOK:-}"
 
 # Generate semantic version style tags
 generate_semantic_version(){
@@ -27,8 +26,6 @@ generate_semantic_version(){
     echo "Version (${GIT_TAG}) does not match semantic version; Skipping..."
     return
   fi
-
-  echo "Using version ${GIT_TAG}"
 
   # Break the version into components
   semver="${GIT_TAG#v}" # Remove the 'v' prefix
@@ -46,7 +43,7 @@ generate_semantic_version(){
 #    $ git pull --depth=50
 #    $ git fetch --unshallow origin
 deepen_git_repo(){
-  if [[ "$(git rev-parse --is-shallow-repository)" == 'true' ]]; then
+  if [[ -f $(git rev-parse --git-dir)/shallow ]]; then
     echo 'Deepen repository history'
     git fetch --unshallow origin
   fi
@@ -54,10 +51,11 @@ deepen_git_repo(){
 
 # Build the image with the specified arguments
 build_image(){
-  echo 'Build the image with the specified arguments'
   deepen_git_repo
+
+  echo 'Build the image with the specified arguments'
   (
-  cd "$BUILD_PATH"
+  cd ".${BUILD_PATH}" # In Docker Hub this is `/` or `/dir`
   docker build \
     --build-arg VERSION="$GIT_TAG" \
     --build-arg VCS_URL="$(git config --get remote.origin.url)" \
@@ -71,12 +69,8 @@ build_image(){
 
 # Push
 push_image(){
-  echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
   echo "Pushing ${IMAGE_NAME}"
   docker push "${IMAGE_NAME}"
-  echo "Pushing 'latest'"
-  docker tag "$IMAGE_NAME" "${DOCKER_REPO}:latest"
-  docker push "${DOCKER_REPO}:latest"
 }
 
 # Tag image
@@ -98,16 +92,29 @@ tag_image(){
   done
 }
 
-# Notify
+# Notify Microbadger
+# Sample `.microbadger` tokens file:
+#     #!/usr/bin/env bash
+#     # MicroBadger tokens
+#     declare -A MICROBADGER_TOKENS=(
+#       ['vladgh/testAutobuildHooks']='ABCDEF='
+#     )
+#     export MICROBADGER_TOKENS
+
 notify_microbadger(){
-  # shellcheck disable=1090
-  . "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)/.microbadger"
+  local tokens_file
+  tokens_file="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)/.microbadger"
 
-  local token="${MICROBADGER_TOKENS[${DOCKER_REPO}]:-}"
-  local url="https://hooks.microbadger.com/images/${DOCKER_REPO}/${token}"
+  if [[ -s "$tokens_file" ]]; then
+    # shellcheck disable=1090
+    . "$tokens_file"
 
-  if [[ -n "$token" ]]; then
-    echo "Notify MicroBadger: $(curl -sX POST "$url")"
+    local token="${MICROBADGER_TOKENS[${DOCKER_REPO}]:-}"
+    local url="https://hooks.microbadger.com/images/${DOCKER_REPO}/${token}"
+
+    if [[ -n "$token" ]]; then
+      echo "Notify MicroBadger: $(curl -sX POST "$url")"
+    fi
   fi
 }
 
