@@ -1,5 +1,12 @@
 # Change Log
 
+## [v0.3.4](https://github.com/vghn/docker_images/tree/v0.3.4) (2018-10-06)
+[Full Changelog](https://github.com/vghn/docker_images/compare/v0.3.3...v0.3.4)
+
+**Closed issues:**
+
+- Improve docker and release scripts [\#144](https://github.com/vghn/docker_images/issues/144)
+
 ## [v0.3.3](https://github.com/vghn/docker_images/tree/v0.3.3) (2018-10-03)
 [Full Changelog](https://github.com/vghn/docker_images/compare/v0.3.2...v0.3.3)
 
