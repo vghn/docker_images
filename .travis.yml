@@ -3,7 +3,7 @@ group: travis_latest
 services: docker
 env:
   global:
-  - GIT_BRANCH="$TRAVIS_BRANCH"
+  - GIT_BRANCH="$TRAVIS_BRANCH" # Specify the branch name manually when on a detached HEAD
   matrix:
   - BUILD_PATH=/ls DOCKER_REPO=vladgh/ls
   - BUILD_PATH=/ps DOCKER_REPO=vladgh/ps
