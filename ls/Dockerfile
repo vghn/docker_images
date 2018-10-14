@@ -1,4 +1,4 @@
-FROM gliderlabs/logspout:v3.2.5
+FROM gliderlabs/logspout:v3.2.6
 LABEL maintainer "Vlad Ghinea vlad@ghn.me"
 
 # Install VladGh CA Root
