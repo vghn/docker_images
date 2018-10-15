@@ -5,10 +5,11 @@ env:
   global:
   - GIT_BRANCH="$TRAVIS_BRANCH" # Specify the branch name manually when on a detached HEAD
   matrix:
-  - BUILD_PATH=/ls DOCKER_REPO=vladgh/ls
-  - BUILD_PATH=/ps DOCKER_REPO=vladgh/ps
-  - BUILD_PATH=/rs DOCKER_REPO=vladgh/rs
+  - DOCKER_BUILD_PATH=ls/ DOCKER_REPO=vladgh/ls
+  - DOCKER_BUILD_PATH=ps/ DOCKER_REPO=vladgh/ps
+  - DOCKER_BUILD_PATH=rs/ DOCKER_REPO=vladgh/rs
 install:
+- git clone https://github.com/vghn/vgs.git ~/vgs
 - sudo apt-get -qy update && sudo apt-get -qy -o Dpkg::Options::="--force-confdef"
   -o Dpkg::Options::="--force-confold" install docker-ce
   docker --version
@@ -19,12 +20,11 @@ install:
   curl -fsSL https://goss.rocks/install | sh
   goss -version
 script:
-- ./scripts/docker.sh build
-- ./scripts/docker.sh test
+- ~/vgs/scripts/docker.sh build
 - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-- if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./scripts/docker.sh push; fi
-- if [[ "$TRAVIS_TAG" =~ ^v[0-9]+ ]]; then ./scripts/docker.sh push && ./scripts/docker.sh tag; fi
-- ./scripts/docker.sh notify
+- if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ~/vgs/scripts/docker.sh push; fi
+- if [[ "$TRAVIS_TAG" =~ ^v[0-9]+ ]]; then ~/vgs/scripts/docker.sh push && ~/vgs/scripts/docker.sh tag; fi
+- . .microbadger && ./scripts/docker.sh notify
 notifications:
   webhooks:
     urls: https://vbot.ghn.me/travis
