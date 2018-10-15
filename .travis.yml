@@ -24,7 +24,7 @@ script:
 - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
 - if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ~/vgs/scripts/docker.sh push; fi
 - if [[ "$TRAVIS_TAG" =~ ^v[0-9]+ ]]; then ~/vgs/scripts/docker.sh push && ~/vgs/scripts/docker.sh tag; fi
-- . .microbadger && ./scripts/docker.sh notify
+- MICROBADGER_TOKENS_FILE=.microbadger && ~/vgs/scripts/docker.sh notify
 notifications:
   webhooks:
     urls: https://vbot.ghn.me/travis
