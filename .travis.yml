@@ -4,9 +4,12 @@ env:
   global:
   - GIT_BRANCH="$TRAVIS_BRANCH" # Specify the branch name manually when on a detached HEAD
   matrix:
+  - DOCKER_BUILD_PATH=lb/ DOCKER_REPO=vladgh/lb
+  - DOCKER_BUILD_PATH=le/ DOCKER_REPO=vladgh/le
   - DOCKER_BUILD_PATH=ls/ DOCKER_REPO=vladgh/ls
   - DOCKER_BUILD_PATH=ps/ DOCKER_REPO=vladgh/ps
   - DOCKER_BUILD_PATH=rs/ DOCKER_REPO=vladgh/rs
+  - DOCKER_BUILD_PATH=wh/ DOCKER_REPO=vladgh/wh
 install:
 - git clone https://github.com/vghn/vgs.git ~/vgs
 - sudo apt-get -qy update && sudo apt-get -qy -o Dpkg::Options::="--force-confdef"

@@ -1,5 +1,7 @@
 # Vlad's Logspout
 
+## ***Abandoned because upstream supports CA certificates now***
+
 [![](https://images.microbadger.com/badges/image/vladgh/ls.svg)](https://microbadger.com/images/vladgh/ls "Get your own image badge on microbadger.com")
 [![](https://images.microbadger.com/badges/version/vladgh/ls.svg)](https://microbadger.com/images/vladgh/ls "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/commit/vladgh/ls.svg)](https://microbadger.com/images/vladgh/ls "Get your own commit badge on microbadger.com")
